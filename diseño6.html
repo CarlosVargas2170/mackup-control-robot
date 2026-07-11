@@ -1,0 +1,3074 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control-Bot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0d1117;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        .app-layout {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .fullscreen-container {
+            flex: 1;
+            min-width: 0;
+            height: 100vh;
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding: 10px;
+            overflow-y: auto;
+            transition: margin-right 0.3s ease;
+        }
+
+        /* ---- SIDEBAR (apps) ---- */
+        .app-sidebar {
+            width: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: rgba(13, 17, 23, 0.95);
+            border-left: 1px solid rgba(48, 54, 61, 0.3);
+            transition: width 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .app-sidebar.open {
+            width: 320px;
+        }
+
+        .app-sidebar-inner {
+            width: 320px;
+            height: 100%;
+            padding: 0;
+            color: #c9d1d9;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ─── Sidebar: Header ─── */
+        .sb-header {
+            padding: 12px 14px 8px;
+            border-bottom: 1px solid #30363d;
+            flex-shrink: 0;
+        }
+
+        .sb-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .sb-header-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .sb-header-logo { font-size: 20px; }
+        .sb-header h1 { font-size: 14px; color: #f0f6fc; margin: 0; font-weight: 600; }
+
+        .sb-conn-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            color: #8b949e;
+            background: rgba(48, 54, 61, 0.4);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sb-conn-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #da3633;
+            display: inline-block;
+        }
+        .sb-conn-dot.online { background: #238636; }
+
+        .sb-url-bar {
+            display: flex;
+            gap: 4px;
+        }
+
+        .sb-url-bar input {
+            flex: 1;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 5px 8px;
+            font-size: 11px;
+            color: #c9d1d9;
+            min-width: 0;
+        }
+
+        .sb-btn-connect {
+            background: #238636;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .sb-btn-connect:hover { background: #2ea043; }
+
+        /* ─── Sidebar: Blocks ─── */
+        .sb-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 14px;
+        }
+
+        .sb-block {
+            margin-bottom: 10px;
+        }
+
+        .sb-block-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: #58a6ff;
+            font-weight: 600;
+        }
+
+        .sb-block-icon { font-size: 13px; }
+
+        .sb-action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .sb-action-grid.cols-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .sb-action-card {
+            background: rgba(48, 54, 61, 0.3);
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: center;
+            color: #c9d1d9;
+            font-family: inherit;
+            font-size: 11px;
+        }
+
+        .sb-action-card:hover { background: rgba(88, 166, 255, 0.1); border-color: #58a6ff; }
+        .sb-action-card.accent { border-color: #58a6ff; }
+        .sb-action-card.danger { border-color: #da3633; }
+        .sb-action-card.danger:hover { background: rgba(218, 54, 51, 0.1); }
+        .sb-action-card-icon { display: block; font-size: 18px; margin-bottom: 3px; }
+        .sb-action-card-label { display: block; font-weight: 600; font-size: 11px; }
+        .sb-action-card-sub { display: block; font-size: 9px; color: #8b949e; margin-top: 2px; }
+
+        /* ─── Sidebar: Audio custom ─── */
+        .sb-audio-custom {
+            margin-top: 5px;
+            font-size: 11px;
+        }
+        .sb-audio-custom-row {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+        .sb-audio-custom-row input[type="text"] {
+            flex: 1;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            padding: 4px 6px;
+            font-size: 10px;
+            color: #c9d1d9;
+        }
+        .sb-audio-custom-row input[type="number"] {
+            width: 55px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            padding: 4px 6px;
+            font-size: 10px;
+            color: #c9d1d9;
+        }
+        .sb-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            color: #8b949e;
+            white-space: nowrap;
+        }
+        .sb-btn-play {
+            background: #238636;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        /* ─── Sidebar: Config ─── */
+        .sb-config-card {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .sb-config-card input {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 10px;
+            color: #c9d1d9;
+        }
+        .sb-config-row {
+            display: flex;
+            gap: 4px;
+        }
+        .sb-config-row input { flex: 1; }
+        .sb-btn-accent {
+            background: #58a6ff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .sb-btn-accent:hover { background: #79b8ff; }
+        .sb-btn-outline {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            border-radius: 6px;
+            padding: 5px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        /* ─── Sidebar: Consola ─── */
+        .sb-console {
+            border-top: 1px solid #30363d;
+            flex-shrink: 0;
+            max-height: 120px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sb-console-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+
+        .sb-console-header-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sb-btn-clear {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 9px;
+            cursor: pointer;
+        }
+
+        .sb-log-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 4px 14px 8px;
+            font-family: 'Consolas', monospace;
+            font-size: 10px;
+            color: #8b949e;
+            line-height: 1.5;
+        }
+
+        .sb-log-box .log-entry { margin: 0; }
+        .sb-log-box .log-ok { color: #238636; }
+        .sb-log-box .log-err { color: #da3633; }
+        .sb-log-box .log-info { color: #58a6ff; }
+
+        .sb-footer {
+            padding: 6px 14px;
+            font-size: 9px;
+            color: #484f58;
+            text-align: center;
+            border-top: 1px solid #1c2333;
+            flex-shrink: 0;
+        }
+
+        /* ---- GRID FLEXIBLE ---- */
+        .camera-grid {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 0;
+            width: 100%;
+            height: 100%;
+            align-content: flex-start;
+            padding: 2px;
+        }
+
+        /* Cada cámara es un tile redimensionable */
+        .cam-tile {
+            background: #0d1117;
+            border: 2px solid #30363d;
+            border-radius: 12px;
+            padding: 14px 14px 10px 14px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: border 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            min-width: 160px;
+            min-height: 130px;
+            width: calc(50% - 5px);  /* valor por defecto */
+            height: 48%;   /* aprox 1/2 del alto */
+            flex-shrink: 0;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .cam-tile:active {
+            cursor: grabbing;
+        }
+
+        .cam-tile.dragging {
+            opacity: 0.5;
+            border: 2px dashed #58a6ff;
+            box-shadow: 0 0 0 4px rgba(88, 166, 255, 0.15);
+            transform: scale(0.97);
+            z-index: 50;
+        }
+
+        .cam-tile.drag-over {
+            border: 2px solid #58a6ff;
+            background: #1c2333;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+        }
+
+        .cam-tile:hover {
+            border-color: #58a6ff;
+        }
+
+        .cam-tile.hidden {
+            display: none !important;
+        }
+
+        /* ---- HEADER ---- */
+        .cam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #8b949e;
+            font-size: 12px;
+            font-weight: 500;
+            border-bottom: 1px solid #1c2333;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
+            flex-shrink: 0;
+            background: rgba(13, 17, 23, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin: -2px -4px 6px -4px;
+        }
+
+        .cam-header .name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #f0f6fc;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .cam-header .name i {
+            color: #58a6ff;
+            font-size: 13px;
+        }
+
+        .cam-header .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            color: #8b949e;
+        }
+
+        .cam-header .status .online {
+            color: #238636;
+        }
+
+        /* ---- BODY ---- */
+        .cam-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0d1117;
+            border-radius: 6px;
+            min-height: 40px;
+            background-image: repeating-linear-gradient(45deg, #161b22 0px, #161b22 6px, #0d1117 6px, #0d1117 12px);
+            position: relative;
+            margin-bottom: 4px;
+        }
+
+        .cam-body .placeholder {
+            color: #3a3a4a;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        .cam-body img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
+        }
+
+        .cam-body {
+            overflow: hidden;
+        }
+
+        .cam-body .badge-stream {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #58a6ff;
+            font-size: 9px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid #30363d;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .cam-body .badge-stream .dot {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #238636;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ---- FOOTER ---- */
+        .cam-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #555;
+            border-top: 1px solid #1c2333;
+            padding-top: 4px;
+            margin-top: 2px;
+            flex-shrink: 0;
+            background: rgba(13, 17, 23, 0.3);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin: 2px -4px -4px -4px;
+        }
+
+        .cam-footer i {
+            margin-right: 3px;
+            color: #444;
+        }
+
+        .cam-footer .rec {
+            color: #da3633;
+        }
+
+        /* ---- RESIZE HANDLES ---- */
+        .resize-handle {
+            position: absolute;
+            background: transparent;
+            z-index: 10;
+        }
+
+        .resize-handle.se {
+            bottom: 0;
+            right: 0;
+            width: 18px;
+            height: 18px;
+            cursor: nwse-resize;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 0 0 10px 0;
+            border-right: 2px solid #58a6ff;
+            border-bottom: 2px solid #58a6ff;
+            transition: background 0.2s;
+        }
+
+        .resize-handle.se:hover {
+            background: rgba(88, 166, 255, 0.25);
+        }
+
+        .resize-handle.s {
+            bottom: 0;
+            left: 24px;
+            right: 24px;
+            height: 6px;
+            cursor: ns-resize;
+            background: transparent;
+            border-bottom: 2px solid #58a6ff;
+            opacity: 0.2;
+            transition: opacity 0.2s;
+        }
+
+        .resize-handle.s:hover {
+            opacity: 0.7;
+        }
+
+        .resize-handle.e {
+            top: 24px;
+            bottom: 24px;
+            right: 0;
+            width: 6px;
+            cursor: ew-resize;
+            background: transparent;
+            border-right: 2px solid #58a6ff;
+            opacity: 0.2;
+            transition: opacity 0.2s;
+        }
+
+        .resize-handle.e:hover {
+            opacity: 0.7;
+        }
+
+        /* ---- DRAG HANDLE (icono) ---- */
+        .drag-handle {
+            position: absolute;
+            top: 4px;
+            right: 10px;
+            color: #444;
+            font-size: 12px;
+            cursor: grab;
+            opacity: 0.3;
+            transition: opacity 0.2s;
+            z-index: 5;
+        }
+
+        .cam-tile:hover .drag-handle {
+            opacity: 1;
+        }
+
+        /* ---- BOTONES OVERLAY (FIJOS) ---- */
+        .overlay-controls {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            background: rgba(13, 17, 23, 0.45);
+            backdrop-filter: blur(6px);
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            pointer-events: auto;
+        }
+
+        .btn-icon {
+            background: transparent;
+            border: none;
+            color: #c9d1d9;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .btn-icon:hover {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            transform: scale(1.05);
+        }
+
+        .btn-icon:active {
+            transform: scale(0.95);
+        }
+
+        .btn-icon.cam {
+            color: #58a6ff;
+        }
+
+        .btn-icon.cam:hover {
+            background: rgba(88, 166, 255, 0.2);
+            box-shadow: 0 0 20px rgba(88, 166, 255, 0.15);
+        }
+
+        .btn-divider {
+            width: 1px;
+            height: 28px;
+            background: #30363d;
+        }
+
+        .btn-icon .tooltip {
+            position: absolute;
+            bottom: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1c2333;
+            color: #8b949e;
+            font-size: 10px;
+            padding: 2px 10px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .btn-icon:hover .tooltip {
+            opacity: 1;
+        }
+
+        /* ---- DROPDOWN MENU ---- */
+        .dropdown-wrapper {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 12px);
+            right: 0;
+            min-width: 300px;
+            background: rgba(10, 14, 20, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(48, 54, 61, 0.3);
+            border-radius: 16px;
+            padding: 12px 0;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
+            display: none;
+            z-index: 2000;
+            pointer-events: auto;
+        }
+
+        .dropdown-menu.open {
+            display: block;
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            color: #c9d1d9;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+            user-select: none;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(88, 166, 255, 0.08);
+        }
+
+        .dropdown-item input[type="checkbox"],
+        .dropdown-item input[type="radio"] {
+            accent-color: #58a6ff;
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .dropdown-item .label-text {
+            flex: 1;
+        }
+
+        .dropdown-item .chevron {
+            font-size: 10px;
+            color: #555;
+            transition: transform 0.2s;
+        }
+
+        .dropdown-item .chevron.open {
+            transform: rotate(90deg);
+        }
+
+        /* ⚙ Icono de config en submenú control */
+        .cfg-trigger {
+            cursor: pointer;
+            color: #8b949e;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            flex-shrink: 0;
+            margin-left: 6px;
+        }
+        .cfg-trigger:hover {
+            color: #58a6ff;
+            background: rgba(88, 166, 255, 0.12);
+        }
+
+        /* Submenú anidado */
+        .dropdown-item.has-submenu {
+            flex-direction: column;
+            align-items: stretch;
+            padding: 0;
+        }
+
+        .dropdown-item.has-submenu > .submenu-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            color: #c9d1d9;
+            font-size: 13px;
+        }
+
+        .dropdown-item.has-submenu > .submenu-trigger:hover {
+            background: rgba(88, 166, 255, 0.08);
+        }
+
+        .submenu {
+            display: none;
+            padding: 0 0 4px 24px;
+        }
+
+        .submenu.open {
+            display: block;
+        }
+
+        .submenu .dropdown-item {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        /* ─── Layout items ─── */
+        .layout-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            color: #c9d1d9;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .layout-item:hover { background: rgba(88, 166, 255, 0.08); }
+
+        .layout-item .layout-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #30363d;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .layout-item.active .layout-dot { background: #58a6ff; }
+        .layout-item.active { color: #f0f6fc; }
+
+        .layout-item .layout-name { flex: 1; }
+
+        .layout-item .layout-del {
+            width: 20px; height: 20px;
+            display: flex; align-items: center; justify-content: center;
+            color: #555;
+            font-size: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+
+        .layout-item:hover .layout-del { opacity: 1; }
+        .layout-item .layout-del:hover { color: #da3633; background: rgba(218,54,51,0.15); }
+
+        /* ─── Modal de configuración de controles ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 16px;
+            width: 480px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            padding: 24px;
+            color: #c9d1d9;
+        }
+
+        .modal-box h2 {
+            font-size: 16px;
+            color: #58a6ff;
+            margin: 0 0 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .modal-bind-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .modal-bind-action {
+            flex: 1;
+            color: #c9d1d9;
+        }
+
+        .modal-bind-key {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #58a6ff;
+            min-width: 50px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: 'Consolas', monospace;
+        }
+
+        .modal-bind-key:hover { border-color: #58a6ff; }
+
+        .modal-bind-key.listening {
+            border-color: #d29922;
+            animation: blink-border 0.5s infinite alternate;
+        }
+
+        @keyframes blink-border {
+            from { border-color: #d29922; box-shadow: 0 0 8px rgba(210,153,34,0.3); }
+            to { border-color: #58a6ff; box-shadow: 0 0 12px rgba(88,166,255,0.3); }
+        }
+
+        .modal-bind-btn {
+            background: transparent;
+            border: 1px solid #30363d;
+            color: #8b949e;
+            border-radius: 5px;
+            padding: 3px 8px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .modal-bind-btn:hover { border-color: #58a6ff; color: #58a6ff; }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #30363d;
+        }
+
+        .modal-actions button {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .modal-btn-close {
+            background: #30363d;
+            color: #c9d1d9;
+        }
+
+        .modal-btn-reset {
+            background: transparent;
+            border: 1px solid #da3633 !important;
+            color: #da3633;
+        }
+
+        .modal-btn-save {
+            background: #238636;
+            color: #fff;
+        }
+
+        /* Divisor del dropdown */
+        .dropdown-divider {
+            height: 1px;
+            background: #30363d;
+            margin: 6px 12px;
+        }
+
+        /* Botones de acción al pie */
+        .dropdown-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            padding: 4px 12px 6px;
+        }
+
+        .dropdown-actions .btn-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 15px;
+            background: transparent;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #c9d1d9;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dropdown-actions .btn-icon:hover {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            border-color: #58a6ff;
+        }
+
+        /* ---- GRÁFICOS OVERLAY ---- */
+        .accel-graph {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 50%;
+            padding: 6px;
+            z-index: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .packet-loss-graph {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 12px;
+            padding: 12px;
+            z-index: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .graph-title {
+            color: #58a6ff;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .accel-graph canvas {
+            display: block;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #1c2333, #0d1117);
+        }
+
+        .packet-loss-graph canvas {
+            display: block;
+            border-radius: 8px;
+            background: rgba(13, 17, 23, 0.5);
+        }
+
+        /* ---- TECLAS WASD ---- */
+        .wasd-keys {
+            position: fixed;
+            top: 200px;
+            left: 20px;
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 12px;
+            padding: 12px;
+            z-index: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .wasd-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .wasd-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .wasd-key {
+            width: 40px;
+            height: 40px;
+            background: rgba(48, 54, 61, 0.4);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b949e;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.1s ease;
+            user-select: none;
+        }
+
+        .wasd-key.active {
+            background: rgba(88, 166, 255, 0.6);
+            border-color: #58a6ff;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(88, 166, 255, 0.5);
+            transform: scale(0.95);
+        }
+
+        /* ---- CONTROL DE VOLANTE ---- */
+        .steering-wheel {
+            position: fixed;
+            top: 200px;
+            left: 20px;
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 50%;
+            padding: 6px;
+            z-index: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .steering-wheel canvas {
+            display: block;
+            border-radius: 50%;
+        }
+
+        /* ---- CONTROL DE MANDO ---- */
+        .gamepad-control {
+            position: fixed;
+            top: 200px;
+            left: 20px;
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 12px;
+            padding: 10px;
+            z-index: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .gamepad-control canvas {
+            display: block;
+            border-radius: 8px;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 768px) {
+            .fullscreen-container { padding: 6px; }
+            .camera-grid { gap: 6px; }
+            .cam-tile { min-width: 120px; min-height: 100px; padding: 10px; }
+            .cam-header { font-size: 10px; }
+            .cam-header .status { font-size: 8px; gap: 4px; }
+            .cam-body .placeholder { font-size: 11px; }
+            .cam-footer { font-size: 8px; }
+            .overlay-controls { top: 12px; right: 12px; padding: 6px 10px; gap: 6px; }
+            .btn-icon { width: 32px; height: 32px; font-size: 15px; }
+            .btn-divider { height: 22px; }
+            .resize-handle.se { width: 14px; height: 14px; }
+            .resize-handle.s { left: 16px; right: 16px; height: 4px; }
+            .resize-handle.e { top: 16px; bottom: 16px; width: 4px; }
+        }
+
+        @media (max-width: 480px) {
+            .cam-tile { width: 100% !important; height: auto !important; min-height: 140px; }
+            .camera-grid { flex-direction: column; flex-wrap: nowrap; }
+            .overlay-controls { top: 8px; right: 8px; padding: 4px 8px; gap: 4px; border-radius: 8px; }
+            .btn-icon { width: 28px; height: 28px; font-size: 13px; }
+            .btn-divider { height: 18px; }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+<div class="fullscreen-container">
+
+    <!-- GRID DE CÁMARAS (flexible) -->
+    <div class="camera-grid" id="cameraGrid">
+        <!-- Cámara 1 -->
+        <div class="cam-tile" data-cam-id="cam1" style="width:calc(50% - 5px); height:48%;">
+            <div class="cam-header">
+                <span class="name"><i class="fas fa-video"></i> CAM FRONT</span>
+                <span class="status"><span class="online">● ONLINE</span> 30 FPS · 1080p</span>
+            </div>
+            <div class="cam-body">
+                <img src="https://picsum.photos/seed/cctv-corridor/640/360" alt="CAM FRONT">
+                <span class="badge-stream"><span class="dot"></span> LIVE</span>
+            </div>
+            <div class="cam-footer">
+                <span><i class="fas fa-tachometer-alt"></i> 0.2% PL</span>
+                <span><i class="fas fa-clock"></i> 18ms</span>
+                <span><i class="fas fa-robot"></i> 1.2 m/s</span>
+                <span class="rec"><i class="fas fa-circle"></i> REC</span>
+            </div>
+            <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="resize-handle se" data-resize="se"></div>
+            <div class="resize-handle s" data-resize="s"></div>
+            <div class="resize-handle e" data-resize="e"></div>
+        </div>
+
+        <!-- Cámara 2 -->
+        <div class="cam-tile" data-cam-id="cam2" style="width:calc(50% - 5px); height:48%;">
+            <div class="cam-header">
+                <span class="name"><i class="fas fa-video"></i> CAM REAR</span>
+                <span class="status"><span class="online">● ONLINE</span> 25 FPS · 720p</span>
+            </div>
+            <div class="cam-body">
+                <img src="https://picsum.photos/seed/warehouse-cam/640/360" alt="CAM REAR">
+                <span class="badge-stream"><span class="dot"></span> LIVE</span>
+            </div>
+            <div class="cam-footer">
+                <span><i class="fas fa-tachometer-alt"></i> 0.5% PL</span>
+                <span><i class="fas fa-clock"></i> 22ms</span>
+                <span><i class="fas fa-robot"></i> 1.0 m/s</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+            </div>
+            <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="resize-handle se" data-resize="se"></div>
+            <div class="resize-handle s" data-resize="s"></div>
+            <div class="resize-handle e" data-resize="e"></div>
+        </div>
+
+        <!-- Cámara 3 -->
+        <div class="cam-tile" data-cam-id="cam3" style="width:100%; height:calc(50% - 5px);">
+            <div class="cam-header">
+                <span class="name"><i class="fas fa-video"></i> CAM WIDE</span>
+                <span class="status"><span class="online">● ONLINE</span> 20 FPS · 720p</span>
+            </div>
+            <div class="cam-body">
+                <img src="https://picsum.photos/seed/perimeter-cam/640/360" alt="CAM WIDE">
+                <span class="badge-stream"><span class="dot"></span> LIVE</span>
+            </div>
+            <div class="cam-footer">
+                <span><i class="fas fa-tachometer-alt"></i> 0.1% PL</span>
+                <span><i class="fas fa-clock"></i> 20ms</span>
+                <span><i class="fas fa-robot"></i> 1.4 m/s</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+            </div>
+            <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="resize-handle se" data-resize="se"></div>
+            <div class="resize-handle s" data-resize="s"></div>
+            <div class="resize-handle e" data-resize="e"></div>
+        </div>
+
+        <!-- Cámara 4 -->
+        <div class="cam-tile hidden" data-cam-id="cam4" style="width:calc(50% - 5px); height:48%;">
+            <div class="cam-header">
+                <span class="name"><i class="fas fa-video"></i> CAM ENTRADA</span>
+                <span class="status"><span class="online">● ONLINE</span> 30 FPS · 1080p</span>
+            </div>
+            <div class="cam-body">
+                <img src="https://picsum.photos/seed/entrance-cam/640/360" alt="CAM ENTRADA">
+                <span class="badge-stream"><span class="dot"></span> LIVE</span>
+            </div>
+            <div class="cam-footer">
+                <span><i class="fas fa-tachometer-alt"></i> 0.3% PL</span>
+                <span><i class="fas fa-clock"></i> 15ms</span>
+                <span><i class="fas fa-robot"></i> 0.8 m/s</span>
+                <span class="rec"><i class="fas fa-circle"></i> REC</span>
+            </div>
+            <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="resize-handle se" data-resize="se"></div>
+            <div class="resize-handle s" data-resize="s"></div>
+            <div class="resize-handle e" data-resize="e"></div>
+        </div>
+
+        <!-- Cámara 5 -->
+        <div class="cam-tile hidden" data-cam-id="cam5" style="width:calc(50% - 5px); height:48%;">
+            <div class="cam-header">
+                <span class="name"><i class="fas fa-video"></i> CAM PASILLO</span>
+                <span class="status"><span class="online">● ONLINE</span> 25 FPS · 720p</span>
+            </div>
+            <div class="cam-body">
+                <img src="https://picsum.photos/seed/hallway-cam/640/360" alt="CAM PASILLO">
+                <span class="badge-stream"><span class="dot"></span> LIVE</span>
+            </div>
+            <div class="cam-footer">
+                <span><i class="fas fa-tachometer-alt"></i> 0.4% PL</span>
+                <span><i class="fas fa-clock"></i> 19ms</span>
+                <span><i class="fas fa-robot"></i> 0.5 m/s</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+            </div>
+            <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="resize-handle se" data-resize="se"></div>
+            <div class="resize-handle s" data-resize="s"></div>
+            <div class="resize-handle e" data-resize="e"></div>
+        </div>
+
+        <!-- Cámara 6 -->
+        <div class="cam-tile hidden" data-cam-id="cam6" style="width:calc(50% - 5px); height:48%;">
+            <div class="cam-header">
+                <span class="name"><i class="fas fa-video"></i> CAM ESTAC.</span>
+                <span class="status"><span class="online">● ONLINE</span> 20 FPS · 720p</span>
+            </div>
+            <div class="cam-body">
+                <img src="https://picsum.photos/seed/parking-sv/640/360" alt="CAM ESTAC.">
+                <span class="badge-stream"><span class="dot"></span> LIVE</span>
+            </div>
+            <div class="cam-footer">
+                <span><i class="fas fa-tachometer-alt"></i> 0.1% PL</span>
+                <span><i class="fas fa-clock"></i> 10ms</span>
+                <span><i class="fas fa-robot"></i> 1.1 m/s</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+            </div>
+            <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
+            <div class="resize-handle se" data-resize="se"></div>
+            <div class="resize-handle s" data-resize="s"></div>
+            <div class="resize-handle e" data-resize="e"></div>
+        </div>
+    </div>
+
+    <!-- GRÁFICO DE ACELERACIÓN -->
+    <div class="accel-graph" id="accelGraph" style="display: none;">
+        <canvas id="accelCanvas" width="120" height="120"></canvas>
+    </div>
+
+    <!-- GRÁFICO DE PACKET LOSS -->
+    <div class="packet-loss-graph" id="packetLossGraph" style="display: none;">
+        <canvas id="packetLossCanvas" width="220" height="90"></canvas>
+    </div>
+
+    <!-- TECLAS WASD -->
+    <div class="wasd-keys" id="wasdKeys" style="display: none;">
+        <div class="wasd-row">
+            <div class="wasd-key" data-key="w">W</div>
+        </div>
+        <div class="wasd-row">
+            <div class="wasd-key" data-key="a">A</div>
+            <div class="wasd-key" data-key="s">S</div>
+            <div class="wasd-key" data-key="d">D</div>
+        </div>
+    </div>
+
+    <!-- CONTROL DE VOLANTE -->
+    <div class="steering-wheel" id="steeringWheel" style="display: none;">
+        <canvas id="steeringCanvas" width="200" height="200"></canvas>
+    </div>
+
+    <!-- CONTROL DE MANDO -->
+    <div class="gamepad-control" id="gamepadControl" style="display: none;">
+        <canvas id="gamepadCanvas" width="180" height="120"></canvas>
+    </div>
+
+    <!-- BOTONES OVERLAY (FIJOS) -->
+    <div class="overlay-controls">
+        <div class="dropdown-wrapper">
+            <button class="btn-icon cam" title="Agregar cámara / vista">
+                <i class="fas fa-camera"></i>
+                <span class="tooltip">Cámaras</span>
+            </button>
+            <div class="dropdown-menu" id="camerasMenu">
+                <label class="dropdown-item">
+                    <input type="checkbox" checked> <span class="label-text">CAM FRONT</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox" checked> <span class="label-text">CAM REAR</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox" checked> <span class="label-text">CAM WIDE</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">CAM ENTRADA</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">CAM PASILLO</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">CAM ESTAC.</span>
+                </label>
+            </div>
+        </div>
+        <div class="btn-divider"></div>
+        <div class="dropdown-wrapper">
+            <button class="btn-icon dropdown-toggle" title="Opciones de configuración">
+                <i class="fas fa-sliders-h"></i>
+                <span class="tooltip">Ajustes</span>
+            </button>
+            <div class="dropdown-menu" id="settingsMenu">
+                <label class="dropdown-item">
+                    <input type="checkbox" checked> <span class="label-text">controlador</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox" checked> <span class="label-text">Packet loss</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">aceleración</span>
+                </label>
+                <div class="dropdown-item has-submenu">
+                    <div class="submenu-trigger">
+                        <i class="fas fa-gamepad" style="width:15px;color:#58a6ff;"></i>
+                        <span class="label-text">control</span>
+                        <span class="chevron"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                    <div class="submenu">
+                        <label class="dropdown-item" style="justify-content:space-between;">
+                            <span><input type="radio" name="controlType" value="teclado" checked> teclado</span>
+                            <span class="cfg-trigger" data-ctrl="teclado" title="Configurar teclas">⚙</span>
+                        </label>
+                        <label class="dropdown-item" style="justify-content:space-between;">
+                            <span><input type="radio" name="controlType" value="volante"> volante</span>
+                            <span class="cfg-trigger" data-ctrl="volante" title="Configurar volante">⚙</span>
+                        </label>
+                        <label class="dropdown-item" style="justify-content:space-between;">
+                            <span><input type="radio" name="controlType" value="mando"> mando</span>
+                            <span class="cfg-trigger" data-ctrl="mando" title="Configurar mando">⚙</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-item has-submenu">
+                    <div class="submenu-trigger">
+                        <i class="fas fa-th-large" style="width:15px;color:#58a6ff;"></i>
+                        <span class="label-text">apps</span>
+                        <span class="chevron"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                    <div class="submenu">
+                        <label class="dropdown-item">
+                            <input type="checkbox" name="appCheck"> mesero
+                        </label>
+                    </div>
+                </div>
+                <div class="dropdown-item has-submenu">
+                    <div class="submenu-trigger">
+                        <i class="fas fa-object-group" style="width:15px;color:#58a6ff;"></i>
+                        <span class="label-text">layouts</span>
+                        <span class="chevron"><i class="fas fa-chevron-right"></i></span>
+                    </div>
+                    <div class="submenu" id="layoutsSubmenu">
+                        <div class="dropdown-item" style="font-size:11px;color:#555;cursor:default;padding:4px 16px;">
+                            (sin layouts guardados)
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-actions">
+                    <button class="btn-icon" title="Guardar configuración">
+                        <i class="fas fa-save"></i>
+                    </button>
+                    <button class="btn-icon" title="Crear nueva configuración">
+                        <i class="fas fa-plus-circle"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <!-- SIDEBAR DE APPS -->
+    <div class="app-sidebar" id="appSidebar">
+        <div class="app-sidebar-inner">
+
+            <!-- Header -->
+            <div class="sb-header">
+                <div class="sb-header-row">
+                    <div class="sb-header-left">
+                        <span class="sb-header-logo">🤖</span>
+                        <h1>Mesero Robot</h1>
+                    </div>
+                    <div class="sb-conn-badge" id="sbConnStatus">
+                        <span class="sb-conn-dot" id="sbConnDot"></span>
+                        <span id="sbConnText">Offline</span>
+                    </div>
+                </div>
+                <div class="sb-url-bar">
+                    <input type="text" id="sbBaseUrl" placeholder="http://IP_DEL_ROBOT:8080">
+                    <button class="sb-btn-connect" onclick="testConnectionSB()">Conectar</button>
+                </div>
+            </div>
+
+            <!-- Controles -->
+            <div class="sb-body">
+
+                <div class="sb-block">
+                    <div class="sb-block-header">
+                        <span class="sb-block-icon">📡</span> Detección
+                    </div>
+                    <div class="sb-action-grid">
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/proximity/near')">
+                            <span class="sb-action-card-icon">👋</span>
+                            <span class="sb-action-card-label">Cerca</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/proximity/away')">
+                            <span class="sb-action-card-icon">🚶</span>
+                            <span class="sb-action-card-label">Lejos</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sb-block">
+                    <div class="sb-block-header">
+                        <span class="sb-block-icon">🖥️</span> Pantalla
+                    </div>
+                    <div class="sb-action-grid">
+                        <button class="sb-action-card accent" onclick="callEndpointSB('POST','/greet')">
+                            <span class="sb-action-card-icon">🗣️</span>
+                            <span class="sb-action-card-label">Saludar</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/product')">
+                            <span class="sb-action-card-icon">🖼️</span>
+                            <span class="sb-action-card-label">Producto</span>
+                        </button>
+                        <button class="sb-action-card danger" onclick="callEndpointSB('POST','/cancel-payment')">
+                            <span class="sb-action-card-icon">✖️</span>
+                            <span class="sb-action-card-label">Cancelar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sb-block">
+                    <div class="sb-block-header">
+                        <span class="sb-block-icon">🔊</span> Audios
+                    </div>
+                    <div class="sb-action-grid cols-3">
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/play-question')">
+                            <span class="sb-action-card-icon">❓</span>
+                            <span class="sb-action-card-label">Pregunta</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/play-thanks')">
+                            <span class="sb-action-card-icon">🙏</span>
+                            <span class="sb-action-card-label">Gracias</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/play-buy')">
+                            <span class="sb-action-card-icon">🛒</span>
+                            <span class="sb-action-card-label">Comprar</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/play-order')">
+                            <span class="sb-action-card-icon">🔔</span>
+                            <span class="sb-action-card-label">Orden</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/play-attention')">
+                            <span class="sb-action-card-icon">⚠️</span>
+                            <span class="sb-action-card-label">Atención</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/play-collect-tray')">
+                            <span class="sb-action-card-icon">🍽️</span>
+                            <span class="sb-action-card-label">Bandeja</span>
+                        </button>
+                        <button class="sb-action-card" onclick="callEndpointSB('POST','/play-coffee')">
+                            <span class="sb-action-card-icon">☕</span>
+                            <span class="sb-action-card-label">Café</span>
+                        </button>
+                        <button class="sb-action-card danger" onclick="callEndpointSB('POST','/audio/stop')">
+                            <span class="sb-action-card-icon">🔇</span>
+                            <span class="sb-action-card-label">Detener</span>
+                        </button>
+                    </div>
+                    <div class="sb-audio-custom">
+                        <div class="sb-audio-custom-row">
+                            <input type="text" id="sbCustomAsset" placeholder="Ruta del audio" value="audio/question_coffe_old2.wav">
+                        </div>
+                        <div class="sb-audio-custom-row">
+                            <input type="number" id="sbCustomVolume" placeholder="Vol" min="0" max="1" step="0.1" value="1.0">
+                            <label class="sb-toggle-label">
+                                <input type="checkbox" id="sbCustomForce"> Forzar
+                            </label>
+                            <button class="sb-btn-play" onclick="playCustomAudioSB()">▶️</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sb-block">
+                    <div class="sb-block-header">
+                        <span class="sb-block-icon">⚙️</span> Configuración
+                    </div>
+                    <div class="sb-config-card">
+                        <button class="sb-btn-outline" onclick="callEndpointSB('GET','/config')">📋 Ver config actual</button>
+                        <input type="text" id="sbCfgBaseUrl" placeholder="Base URL del API">
+                        <input type="text" id="sbCfgToken" placeholder="Bearer Token">
+                        <div class="sb-config-row">
+                            <input type="number" id="sbCfgMerchantId" placeholder="Merchant ID">
+                            <input type="number" id="sbCfgProductId" placeholder="Product ID">
+                        </div>
+                        <button class="sb-btn-accent" onclick="updateConfigSB()">💾 Guardar configuración</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Consola -->
+            <div class="sb-console">
+                <div class="sb-console-header">
+                    <div class="sb-console-header-left">
+                        <span class="sb-block-icon">📟</span> Consola
+                    </div>
+                    <button class="sb-btn-clear" onclick="clearLogsSB()">Limpiar</button>
+                </div>
+                <div class="sb-log-box" id="sbLogBody">
+                    <div class="log-entry log-info">Listo para conectar...</div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="sb-footer">Control Remoto · Mesero Robot</div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ═══ MODAL CONFIGURACIÓN DE CONTROLES ═══ -->
+<div class="modal-overlay" id="ctrlModal">
+    <div class="modal-box" id="ctrlModalBox"></div>
+</div>
+
+<script>
+    (function() {
+        const grid = document.getElementById('cameraGrid');
+
+        // ============================================================
+        //  UTILIDADES
+        // ============================================================
+        let toastTimeout = null;
+        function showToast(msg) {
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.style.cssText = `
+                    position:fixed;bottom:30px;left:50%;transform:translateX(-50%);
+                    background:#2d2d2d;border:1px solid #4a4a4a;
+                    padding:8px 22px;border-radius:40px;color:#ccc;
+                    font-size:13px;font-family:'Segoe UI',sans-serif;
+                    box-shadow:0 6px 20px rgba(0,0,0,0.6);
+                    pointer-events:none;opacity:0;
+                    transition:opacity 0.3s;z-index:9999;
+                `;
+                document.body.appendChild(toast);
+            }
+            toast.textContent = msg;
+            toast.style.opacity = '1';
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => { toast.style.opacity = '0'; }, 1500);
+        }
+
+        // ============================================================
+        //  DRAG & DROP  (con delegación de eventos → dinámico)
+        // ============================================================
+        let draggedEl = null;
+        let dragDownTarget = null;   // dónde hizo mousedown original
+
+        // Asegurar draggable en todos los tiles existentes
+        grid.querySelectorAll('.cam-tile').forEach(t => t.setAttribute('draggable', 'true'));
+
+        // Activar draggable en cualquier tile nuevo
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1 && node.matches && node.matches('.cam-tile')) {
+                        node.setAttribute('draggable', 'true');
+                    }
+                });
+            });
+        });
+        observer.observe(grid, { childList: true });
+
+        // Record dónde se hizo mousedown para evitar drag desde resize handles
+        grid.addEventListener('mousedown', function(e) {
+            dragDownTarget = e.target;
+        }, true);
+
+        grid.addEventListener('dragstart', function(e) {
+            // Si el mousedown fue sobre un resize-handle → no drag
+            if (dragDownTarget && dragDownTarget.closest('.resize-handle')) {
+                e.preventDefault();
+                dragDownTarget = null;
+                return;
+            }
+            const tile = e.target.closest('.cam-tile');
+            if (!tile) return;
+            draggedEl = tile;
+            tile.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', tile.dataset.camId);
+            e.dataTransfer.effectAllowed = 'move';
+            dragDownTarget = null;
+        });
+
+        grid.addEventListener('dragend', function(e) {
+            if (draggedEl) {
+                draggedEl.classList.remove('dragging');
+                draggedEl = null;
+            }
+            grid.querySelectorAll('.cam-tile.drag-over').forEach(t => t.classList.remove('drag-over'));
+        });
+
+        grid.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        grid.addEventListener('dragenter', function(e) {
+            e.preventDefault();
+            const target = e.target.closest('.cam-tile');
+            if (target && target !== draggedEl) {
+                target.classList.add('drag-over');
+            }
+        });
+
+        grid.addEventListener('dragleave', function(e) {
+            const target = e.target.closest('.cam-tile');
+            if (target) target.classList.remove('drag-over');
+        });
+
+        grid.addEventListener('drop', function(e) {
+            e.preventDefault();
+            const target = e.target.closest('.cam-tile');
+            if (!target || !draggedEl) return;
+            target.classList.remove('drag-over');
+
+            const draggedId = e.dataTransfer.getData('text/plain');
+            if (!draggedId || target.dataset.camId === draggedId) return;
+
+            const fromIndex = Array.from(grid.children).indexOf(draggedEl);
+            const toIndex = Array.from(grid.children).indexOf(target);
+
+            if (fromIndex < toIndex) {
+                grid.insertBefore(draggedEl, target.nextElementSibling);
+            } else {
+                grid.insertBefore(draggedEl, target);
+            }
+            recalcLayout();
+            showToast(`📹 ${draggedId} movida`);
+        });
+
+        // ============================================================
+        //  RESIZE  (con delegación)
+        // ============================================================
+        let resizeData = null;
+
+        grid.addEventListener('mousedown', function(e) {
+            const handle = e.target.closest('.resize-handle');
+            if (!handle) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const tile = handle.closest('.cam-tile');
+            const type = handle.dataset.resize;
+            const startX = e.clientX;
+            const startY = e.clientY;
+            const startW = tile.offsetWidth;
+            const startH = tile.offsetHeight;
+            resizeData = { tile, type, startX, startY, startW, startH, camId: tile.dataset.camId };
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!resizeData) return;
+            const { tile, type, startX, startY, startW, startH } = resizeData;
+            let w = startW, h = startH;
+            if (type === 'se' || type === 'e') w = Math.max(140, startW + (e.clientX - startX));
+            if (type === 'se' || type === 's') h = Math.max(110, startH + (e.clientY - startY));
+            tile.style.width = w + 'px';
+            tile.style.height = h + 'px';
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (resizeData) {
+                showToast(`📐 ${resizeData.camId} redimensionada`);
+                resizeData = null;
+            }
+        });
+
+        // ============================================================
+        //  LAYOUT DINÁMICO
+        // ============================================================
+        function recalcLayout() {
+            const visible = Array.from(grid.querySelectorAll('.cam-tile:not(.hidden)'));
+            const count = visible.length;
+            if (count === 0) return;
+
+            let w, h;
+            if (count === 1) {
+                w = 'calc(100% - 0px)'; h = 'calc(96% - 0px)';
+            } else if (count === 2) {
+                w = 'calc(50% - 5px)';  h = 'calc(96% - 0px)';
+            } else if (count <= 4) {
+                w = 'calc(50% - 5px)';  h = 'calc(48% - 0px)';
+            } else if (count <= 6) {
+                w = 'calc(33.33% - 7px)'; h = 'calc(32% - 0px)';
+            } else {
+                w = 'calc(25% - 8px)';  h = 'calc(24% - 0px)';
+            }
+
+            visible.forEach(tile => {
+                // Solo actualizar si no tiene tamaño personalizado (resize manual)
+                if (!tile.dataset.customWidth) {
+                    tile.style.width = w;
+                    tile.style.height = h;
+                }
+            });
+        }
+
+        // ============================================================
+        //  CHECKBOXES DEL MENÚ → VISIBILIDAD DE CÁMARAS
+        // ============================================================
+        const camerasMenu = document.getElementById('camerasMenu');
+        if (camerasMenu) {
+            camerasMenu.addEventListener('change', function(e) {
+                const cb = e.target.closest('input[type="checkbox"]');
+                if (!cb) return;
+                const label = cb.closest('.dropdown-item');
+                const camName = label?.querySelector('.label-text')?.textContent.trim();
+                if (!camName) return;
+
+                // Buscar el tile por el nombre (texto del header)
+                let tile = null;
+                grid.querySelectorAll('.cam-tile').forEach(t => {
+                    const nameEl = t.querySelector('.cam-header .name');
+                    if (nameEl && nameEl.textContent.trim().includes(camName)) {
+                        tile = t;
+                    }
+                });
+
+                if (tile) {
+                    if (cb.checked) {
+                        tile.classList.remove('hidden');
+                        showToast('📷 ' + camName + ' visible');
+                    } else {
+                        tile.classList.add('hidden');
+                        // Limpiar tamaño personalizado al ocultar
+                        delete tile.dataset.customWidth;
+                        delete tile.dataset.customHeight;
+                        showToast('🙈 ' + camName + ' oculta');
+                    }
+                    recalcLayout();
+                }
+            });
+        }
+
+        // ============================================================
+        //  DROPDOWNS
+        // ============================================================
+        function closeAllDropdowns() {
+            document.querySelectorAll('.dropdown-menu.open').forEach(m => m.classList.remove('open'));
+            document.querySelectorAll('.submenu.open').forEach(s => s.classList.remove('open'));
+            document.querySelectorAll('.chevron.open').forEach(c => c.classList.remove('open'));
+        }
+
+        const camToggle = document.querySelector('.btn-icon.cam');
+        const camDropdown = document.getElementById('camerasMenu');
+        if (camToggle && camDropdown) {
+            camToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                document.getElementById('settingsMenu')?.classList.remove('open');
+                camDropdown.classList.toggle('open');
+                this.style.transform = 'scale(0.92)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+        }
+
+        const settingsToggle = document.querySelector('.dropdown-toggle');
+        const settingsDropdown = document.getElementById('settingsMenu');
+        if (settingsToggle && settingsDropdown) {
+            settingsToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                camDropdown?.classList.remove('open');
+                settingsDropdown.classList.toggle('open');
+                this.style.transform = 'scale(0.92)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-wrapper')) closeAllDropdowns();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeAllDropdowns();
+        });
+
+        // ============================================================
+        //  SUBMENÚ "control"
+        // ============================================================
+        const wasdKeys = document.getElementById('wasdKeys');
+        const steeringWheel = document.getElementById('steeringWheel');
+        const gamepadControl = document.getElementById('gamepadControl');
+        const steeringCanvas = document.getElementById('steeringCanvas');
+        const gamepadCanvas = document.getElementById('gamepadCanvas');
+        const steeringCtx = steeringCanvas?.getContext('2d');
+        const gamepadCtx = gamepadCanvas?.getContext('2d');
+        
+        document.querySelectorAll('.submenu-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.querySelector('.chevron')?.classList.toggle('open');
+                this.nextElementSibling?.classList.toggle('open');
+            });
+        });
+
+        // Manejar selección de tipo de control
+        document.querySelectorAll('input[name="controlType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Ocultar todos los controles
+                wasdKeys.style.display = 'none';
+                steeringWheel.style.display = 'none';
+                gamepadControl.style.display = 'none';
+                
+                // Detener simulación del volante si estaba activa
+                if (steeringInterval) {
+                    clearInterval(steeringInterval);
+                    steeringInterval = null;
+                }
+                
+                if (this.value === 'teclado' && this.checked) {
+                    wasdKeys.style.display = 'block';
+                    showToast('⌨️ Control por teclado activado');
+                } else if (this.value === 'volante' && this.checked) {
+                    steeringWheel.style.display = 'block';
+                    steeringAngle = 0;
+                    steeringTarget = 0;
+                    drawSteeringWheel(0);
+                    steeringInterval = setInterval(simulateSteering, 50);
+                    showToast('🎮 Control por volante activado');
+                } else if (this.value === 'mando' && this.checked) {
+                    gamepadControl.style.display = 'block';
+                    drawGamepad();
+                    showToast('🕹️ Control por mando activado');
+                }
+            });
+        });
+
+        // WASD key listeners
+        document.addEventListener('keydown', function(e) {
+            const key = e.key.toLowerCase();
+            if (['w', 'a', 's', 'd'].includes(key)) {
+                const keyEl = document.querySelector(`.wasd-key[data-key="${key}"]`);
+                if (keyEl && !keyEl.classList.contains('active')) {
+                    keyEl.classList.add('active');
+                }
+            }
+        });
+
+        document.addEventListener('keyup', function(e) {
+            const key = e.key.toLowerCase();
+            if (['w', 'a', 's', 'd'].includes(key)) {
+                const keyEl = document.querySelector(`.wasd-key[data-key="${key}"]`);
+                if (keyEl) {
+                    keyEl.classList.remove('active');
+                }
+            }
+        });
+
+        // ============================================================
+        //  DIBUJO DE VOLANTE
+        // ============================================================
+        function drawSteeringWheel(angle) {
+            if (!steeringCtx) return;
+            const ctx = steeringCtx;
+            const width = steeringCanvas.width;
+            const height = steeringCanvas.height;
+            const cx = width / 2;
+            const cy = height / 2;
+            const rimR = 88;
+            const spokeW = 10;
+            const hubR = 42;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Rotar todo según el ángulo
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate((angle * Math.PI) / 180);
+
+            // ─── Aro exterior ───
+            const rimGrad = ctx.createRadialGradient(0, 0, rimR - 10, 0, 0, rimR + 6);
+            rimGrad.addColorStop(0, '#3a3a3a');
+            rimGrad.addColorStop(0.5, '#2a2a2a');
+            rimGrad.addColorStop(1, '#1a1a1a');
+            ctx.strokeStyle = rimGrad;
+            ctx.lineWidth = 14;
+            ctx.beginPath();
+            ctx.arc(0, 0, rimR, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // ─── Radios (spokes) ───
+            ctx.strokeStyle = '#2a2a2a';
+            ctx.lineWidth = spokeW;
+            ctx.lineCap = 'round';
+            // Radio izquierdo
+            ctx.beginPath();
+            ctx.moveTo(-hubR + 5, -5);
+            ctx.lineTo(-rimR + 10, -25);
+            ctx.stroke();
+            // Radio derecho
+            ctx.beginPath();
+            ctx.moveTo(hubR - 5, -5);
+            ctx.lineTo(rimR - 10, -25);
+            ctx.stroke();
+            // Radio inferior
+            ctx.beginPath();
+            ctx.moveTo(0, hubR - 5);
+            ctx.lineTo(0, rimR - 10);
+            ctx.stroke();
+
+            // ─── Borde fino alrededor del aro ───
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.25)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(0, 0, rimR, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // ─── Hub (centro) ───
+            ctx.fillStyle = '#1a1a1a';
+            ctx.beginPath();
+            ctx.arc(0, 0, hubR, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, hubR, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // ─── BOTONES DEL VOLANTE ───
+            function drawBtn(bx, by, br, color, label) {
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(bx, by, br, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                if (label) {
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 8px Segoe UI';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(label, bx, by);
+                }
+            }
+
+            // ─── LADO IZQUIERDO (4 botones) ───
+            drawBtn(-30, -18, 7, '#d4a017', 'Y');   // Amarillo arriba
+            drawBtn(-32, 2, 7, '#3b82f6', 'B');     // Azul medio
+            drawBtn(-28, 22, 7, '#22c55e', 'G');     // Verde abajo
+            drawBtn(-20, 40, 6, '#444', 'X');        // Negro inferior
+
+            // ─── LADO DERECHO (3 botones + dial) ───
+            drawBtn(30, -15, 7, '#333', 'A');        // Negro arriba
+            drawBtn(32, 8, 7, '#ef4444', 'R');       // Rojo medio
+            drawBtn(28, 28, 7, '#333', 'L');          // Negro abajo
+
+            // Dial rotativo de 5 posiciones (inferior-derecha)
+            ctx.fillStyle = '#333';
+            ctx.beginPath();
+            ctx.arc(48, 38, 10, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // 5 marcas alrededor del dial
+            ctx.strokeStyle = '#888';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 5; i++) {
+                const a = (i / 5) * 2 * Math.PI - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(48 + Math.cos(a) * 7, 38 + Math.sin(a) * 7);
+                ctx.lineTo(48 + Math.cos(a) * 10, 38 + Math.sin(a) * 10);
+                ctx.stroke();
+            }
+            // Indicador del dial
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(48, 33, 2.5, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // ─── ENGINE START (rojo, centro-inferior) ───
+            ctx.fillStyle = '#dc2626';
+            ctx.beginPath();
+            ctx.arc(0, 22, 9, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.strokeStyle = '#991b1b';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            // Texto "START"
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 6px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('START', 0, 22);
+
+            // ─── Palancas traseras (indicadores en los bordes) ───
+            ctx.fillStyle = '#555';
+            ctx.fillRect(-rimR - 8, -6, 7, 12);  // palanca izq
+            ctx.fillRect(rimR + 1, -6, 7, 12);   // palanca der
+
+            // ─── Botones traseros ───
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(-rimR - 8, 8, 7, 5);   // botón trasero izq
+            ctx.fillRect(rimR + 1, 8, 7, 5);    // botón trasero der
+
+            ctx.restore();
+
+            // ─── Ángulo actual ───
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '10px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText(Math.round(angle) + '°', cx, height - 5);
+        }
+
+        // Simular movimiento del volante
+        let steeringAngle = 0;
+        let steeringTarget = 0;
+        let steeringInterval = null;
+
+        function simulateSteering() {
+            if (Math.random() < 0.05) {
+                steeringTarget = (Math.random() - 0.5) * 90; // -45° a 45°
+            }
+            const diff = steeringTarget - steeringAngle;
+            steeringAngle += diff * 0.1;
+            drawSteeringWheel(steeringAngle);
+        }
+
+        // ============================================================
+        //  DIBUJO DE MANDO
+        // ============================================================
+        function drawGamepad() {
+            if (!gamepadCtx) return;
+            const ctx = gamepadCtx;
+            const width = gamepadCanvas.width;
+            const height = gamepadCanvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Cuerpo del mando
+            ctx.fillStyle = 'rgba(48, 54, 61, 0.4)';
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.3)';
+            ctx.lineWidth = 2;
+            
+            // Forma del mando
+            ctx.beginPath();
+            ctx.roundRect(20, 30, 140, 60, 15);
+            ctx.fill();
+            ctx.stroke();
+
+            // Joystick izquierdo
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(50, 60, 12, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Joystick derecho
+            ctx.beginPath();
+            ctx.arc(130, 60, 12, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Botones A, B, X, Y
+            const buttons = [
+                { x: 110, y: 45, label: 'Y', color: '#d29922' },
+                { x: 125, y: 60, label: 'B', color: '#da3633' },
+                { x: 110, y: 75, label: 'A', color: '#238636' },
+                { x: 95, y: 60, label: 'X', color: '#58a6ff' }
+            ];
+
+            buttons.forEach(btn => {
+                ctx.fillStyle = btn.color;
+                ctx.beginPath();
+                ctx.arc(btn.x, btn.y, 6, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 8px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(btn.label, btn.x, btn.y);
+            });
+
+            // D-pad
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.4)';
+            // Vertical
+            ctx.fillRect(45, 50, 10, 20);
+            // Horizontal
+            ctx.fillRect(40, 55, 20, 10);
+
+            // Etiquetas
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '10px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('GAMEPAD', width / 2, height - 5);
+        }
+
+        // ============================================================
+        //  BOTONES DE ACCIÓN (Guardar / Crear) + LAYOUTS
+        // ============================================================
+        const STORAGE_KEY = 'camera_layouts';
+        let activeLayoutName = null;
+
+        // Capturar estado actual del DOM
+        function captureState() {
+            const tiles = grid.querySelectorAll('.cam-tile');
+            const cameras = [];
+            tiles.forEach(t => {
+                cameras.push({
+                    id: t.dataset.camId,
+                    width: t.style.width,
+                    height: t.style.height,
+                    order: Array.from(grid.children).indexOf(t),
+                    hidden: t.classList.contains('hidden'),
+                    customWidth: t.dataset.customWidth || null,
+                    customHeight: t.dataset.customHeight || null
+                });
+            });
+            return cameras;
+        }
+
+        // Aplicar estado al DOM
+        function applyState(cameras) {
+            cameras.sort((a, b) => a.order - b.order);
+            const visible = [];
+            cameras.forEach(c => {
+                const t = grid.querySelector(`.cam-tile[data-cam-id="${c.id}"]`);
+                if (!t) return;
+                if (c.hidden) t.classList.add('hidden');
+                else { t.classList.remove('hidden'); visible.push(t); }
+                if (c.customWidth) { t.style.width = c.customWidth; t.dataset.customWidth = c.customWidth; }
+                else { t.style.width = c.width; delete t.dataset.customWidth; }
+                if (c.customHeight) { t.style.height = c.customHeight; t.dataset.customHeight = c.customHeight; }
+                else { t.style.height = c.height; delete t.dataset.customHeight; }
+                grid.appendChild(t); // reordenar
+            });
+            // Marcar los visibles con customWidth para que recalcLayout no los pise
+            visible.forEach(t => {
+                if (!t.dataset.customWidth) t.dataset.customWidth = t.style.width;
+                if (!t.dataset.customHeight) t.dataset.customHeight = t.style.height;
+            });
+        }
+
+        // Persistencia en localStorage
+        function loadLayouts() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+            catch { return {}; }
+        }
+
+        function saveLayouts(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // Renderizar lista de layouts en el submenú
+        function renderLayoutList() {   
+            const sub = document.getElementById('layoutsSubmenu');
+            if (!sub) return;
+            const layouts = loadLayouts();
+            const names = Object.keys(layouts);
+            sub.innerHTML = '';
+
+            if (names.length === 0) {
+                sub.innerHTML = '<div class="dropdown-item" style="font-size:11px;color:#555;cursor:default;padding:4px 16px;">(sin layouts guardados)</div>';
+                activeLayoutName = null;
+                return;
+            }
+
+            names.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'layout-item' + (name === activeLayoutName ? ' active' : '');
+                div.innerHTML = `<span class="layout-dot"></span><span class="layout-name">${name}</span><span class="layout-del" title="Eliminar">🗑</span>`;
+
+                div.querySelector('.layout-name').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    activeLayoutName = name;
+                    const data = loadLayouts();
+                    if (data[name]) applyState(data[name]);
+                    renderLayoutList();
+                    showToast('📐 Layout "' + name + '" aplicado');
+                });
+
+                div.querySelector('.layout-del').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm('¿Eliminar layout "' + name + '"?')) {
+                        const data = loadLayouts();
+                        delete data[name];
+                        saveLayouts(data);
+                        if (activeLayoutName === name) activeLayoutName = null;
+                        renderLayoutList();
+                        showToast('🗑 Layout eliminado');
+                    }
+                });
+
+                sub.appendChild(div);
+            });
+        }
+
+        // Guardar layout actual
+        function saveCurrentLayout() {
+            if (!activeLayoutName) {
+                const name = prompt('Nombre del layout:');
+                if (!name || !name.trim()) return;
+                activeLayoutName = name.trim();
+            }
+            const data = loadLayouts();
+            data[activeLayoutName] = captureState();
+            saveLayouts(data);
+            renderLayoutList();
+            showToast('💾 Layout "' + activeLayoutName + '" guardado');
+        }
+
+        // Crear nuevo layout
+        function createNewLayout() {
+            const name = prompt('Nombre del nuevo layout:');
+            if (!name || !name.trim()) return;
+            activeLayoutName = name.trim();
+            const data = loadLayouts();
+            data[activeLayoutName] = captureState();
+            saveLayouts(data);
+            renderLayoutList();
+            showToast('➕ Layout "' + activeLayoutName + '" creado');
+        }
+
+        // Handlers de los botones
+        document.querySelectorAll('.dropdown-actions .btn-icon').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.style.transform = 'scale(0.92)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                const icon = this.querySelector('i');
+                if (icon?.classList.contains('fa-save')) {
+                    saveCurrentLayout();
+                } else if (icon?.classList.contains('fa-plus-circle')) {
+                    createNewLayout();
+                }
+            });
+        });
+
+        // Renderizar lista al cargar
+        renderLayoutList();
+
+        // ============================================================
+        //  GRÁFICOS: ACELERACIÓN Y PACKET LOSS
+        // ============================================================
+        const accelGraph = document.getElementById('accelGraph');
+        const packetLossGraph = document.getElementById('packetLossGraph');
+        const accelCanvas = document.getElementById('accelCanvas');
+        const packetLossCanvas = document.getElementById('packetLossCanvas');
+        const accelCtx = accelCanvas?.getContext('2d');
+        const packetLossCtx = packetLossCanvas?.getContext('2d');
+
+        // Datos para los gráficos
+        let accelData = [];
+        let packetLossData = [];
+        const maxDataPoints = 100;
+
+        // Intervalos de simulación
+        let accelInterval = null;
+        let packetLossInterval = null;
+
+        // Función para dibujar el gráfico de aceleración (velocímetro)
+        function drawAccelGraph() {
+            if (!accelCtx) return;
+            const ctx = accelCtx;
+            const width = accelCanvas.width;
+            const height = accelCanvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2 - 20;
+
+            // Limpiar canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Ángulos del arco (de 135° a 405° = 270° de recorrido)
+            const startAngle = (135 * Math.PI) / 180;
+            const endAngle = (405 * Math.PI) / 180;
+            const maxSpeed = 120; // km/h
+
+            // Dibujar arco de fondo
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.5)';
+            ctx.lineWidth = 20;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+            ctx.stroke();
+
+            // Dibujar arco de color según velocidad
+            const currentSpeed = accelData.length > 0 ? accelData[accelData.length - 1] : 0;
+            const speedAngle = startAngle + ((currentSpeed / maxSpeed) * (endAngle - startAngle));
+            
+            let arcColor;
+            if (currentSpeed < 60) arcColor = '#238636'; // verde
+            else if (currentSpeed < 90) arcColor = '#d29922'; // amarillo
+            else arcColor = '#da3633'; // rojo
+
+            ctx.strokeStyle = arcColor;
+            ctx.lineWidth = 20;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, startAngle, speedAngle);
+            ctx.stroke();
+
+            // Dibujar marcas y números
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '12px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let speed = 0; speed <= maxSpeed; speed += 20) {
+                const angle = startAngle + ((speed / maxSpeed) * (endAngle - startAngle));
+                const isMain = speed % 40 === 0;
+                
+                // Marca
+                const markLength = isMain ? 15 : 8;
+                const markStart = radius - markLength;
+                const markEnd = radius;
+                
+                ctx.strokeStyle = isMain ? '#c9d1d9' : '#8b949e';
+                ctx.lineWidth = isMain ? 3 : 2;
+                ctx.beginPath();
+                ctx.moveTo(
+                    centerX + markStart * Math.cos(angle),
+                    centerY + markStart * Math.sin(angle)
+                );
+                ctx.lineTo(
+                    centerX + markEnd * Math.cos(angle),
+                    centerY + markEnd * Math.sin(angle)
+                );
+                ctx.stroke();
+
+                // Número (solo en marcas principales)
+                if (isMain) {
+                    const textRadius = radius - 30;
+                    const textX = centerX + textRadius * Math.cos(angle);
+                    const textY = centerY + textRadius * Math.sin(angle);
+                    ctx.fillText(speed.toString(), textX, textY);
+                }
+            }
+
+            // Dibujar aguja
+            const needleAngle = startAngle + ((currentSpeed / maxSpeed) * (endAngle - startAngle));
+            const needleLength = radius - 10;
+            
+            // Sombra de la aguja
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(centerX + 2, centerY + 2);
+            ctx.lineTo(
+                centerX + 2 + needleLength * Math.cos(needleAngle),
+                centerY + 2 + needleLength * Math.sin(needleAngle)
+            );
+            ctx.stroke();
+
+            // Aguja principal
+            ctx.strokeStyle = '#58a6ff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + needleLength * Math.cos(needleAngle),
+                centerY + needleLength * Math.sin(needleAngle)
+            );
+            ctx.stroke();
+
+            // Centro de la aguja
+            ctx.fillStyle = '#58a6ff';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
+            ctx.fill();
+
+            ctx.fillStyle = '#0d1117';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Valor numérico en el centro
+            ctx.fillStyle = '#f0f6fc';
+            ctx.font = 'bold 32px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(Math.round(currentSpeed).toString(), centerX, centerY + 50);
+
+            // Unidad
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '14px Segoe UI';
+            ctx.fillText('km/h', centerX, centerY + 75);
+        }
+
+        // Función para dibujar el gráfico de packet loss (línea)
+        function drawPacketLossGraph() {
+            if (!packetLossCtx) return;
+            const ctx = packetLossCtx;
+            const width = packetLossCanvas.width;
+            const height = packetLossCanvas.height;
+            const padLeft = 28;
+            const padRight = 8;
+            const padTop = 6;
+            const padBottom = 14;
+            const plotW = width - padLeft - padRight;
+            const plotH = height - padTop - padBottom;
+
+            // Limpiar
+            ctx.clearRect(0, 0, width, height);
+
+            // Fondo del área de gráfico
+            ctx.fillStyle = 'rgba(13, 17, 23, 0.4)';
+            ctx.fillRect(padLeft, padTop, plotW, plotH);
+
+            // Grid horizontal (Y) — 0%, 50%, 100%
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.35)';
+            ctx.lineWidth = 1;
+            const yTicks = [0, 0.5, 1];
+            yTicks.forEach(f => {
+                const y = padTop + plotH * (1 - f);
+                ctx.beginPath();
+                ctx.moveTo(padLeft, y);
+                ctx.lineTo(width - padRight, y);
+                ctx.stroke();
+            });
+
+            // Línea de datos
+            if (packetLossData.length > 1) {
+                // Gradiente de color bajo la línea
+                const grad = ctx.createLinearGradient(0, padTop, 0, padTop + plotH);
+                grad.addColorStop(0, 'rgba(88, 166, 255, 0.15)');
+                grad.addColorStop(1, 'rgba(88, 166, 255, 0)');
+
+                ctx.beginPath();
+                const step = plotW / (maxDataPoints - 1);
+                packetLossData.forEach((val, i) => {
+                    const x = padLeft + i * step;
+                    const y = padTop + plotH * (1 - val);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                // Cerrar el área para el gradiente
+                const lastX = padLeft + (packetLossData.length - 1) * step;
+                ctx.lineTo(lastX, padTop + plotH);
+                ctx.lineTo(padLeft, padTop + plotH);
+                ctx.closePath();
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                // Línea principal
+                ctx.beginPath();
+                packetLossData.forEach((val, i) => {
+                    const x = padLeft + i * step;
+                    const y = padTop + plotH * (1 - val);
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                });
+                ctx.strokeStyle = '#58a6ff';
+                ctx.lineWidth = 2;
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+
+                // Glow
+                ctx.strokeStyle = 'rgba(88, 166, 255, 0.3)';
+                ctx.lineWidth = 4;
+                ctx.stroke();
+
+                // Punto en el último valor
+                const last = packetLossData[packetLossData.length - 1];
+                const lx = padLeft + (packetLossData.length - 1) * step;
+                const ly = padTop + plotH * (1 - last);
+                ctx.fillStyle = last > 0.6 ? '#da3633' : last > 0.3 ? '#d29922' : '#238636';
+                ctx.beginPath();
+                ctx.arc(lx, ly, 3, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(lx, ly, 1.5, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            // Labels Y
+            ctx.fillStyle = '#8b949e';
+            ctx.font = '9px Segoe UI';
+            ctx.textAlign = 'right';
+            ctx.fillText('100%', padLeft - 4, padTop + 5);
+            ctx.fillText('50%', padLeft - 4, padTop + plotH / 2 + 3);
+            ctx.fillText('0%', padLeft - 4, padTop + plotH + 4);
+
+            // Label X (tiempo)
+            ctx.textAlign = 'center';
+            ctx.fillText('→ t', width - 10, height - 2);
+
+            // Valor actual
+            if (packetLossData.length > 0) {
+                const val = packetLossData[packetLossData.length - 1];
+                ctx.fillStyle = '#c9d1d9';
+                ctx.font = 'bold 10px Segoe UI';
+                ctx.textAlign = 'left';
+                ctx.fillText((val * 100).toFixed(1) + '%', width - 50, 10);
+            }
+        }
+
+        // Simular datos de velocidad (km/h)
+        let currentSpeed = 0;
+        let targetSpeed = 0;
+        
+        function simulateAccel() {
+            // Cambiar target cada cierto tiempo
+            if (Math.random() < 0.05) {
+                targetSpeed = Math.random() * 120;
+            }
+            
+            // Suavizar transición hacia el target
+            const diff = targetSpeed - currentSpeed;
+            currentSpeed += diff * 0.1;
+            
+            // Asegurar que esté en rango
+            currentSpeed = Math.max(0, Math.min(120, currentSpeed));
+            
+            accelData[0] = currentSpeed;
+            drawAccelGraph();
+        }
+
+        // Simular datos de packet loss
+        function simulatePacketLoss() {
+            const newVal = Math.random() * 0.8; // 0% a 80%
+            packetLossData.push(newVal);
+            if (packetLossData.length > maxDataPoints) packetLossData.shift();
+            drawPacketLossGraph();
+        }
+
+        // Manejar checkbox de aceleración
+        const settingsMenu = document.getElementById('settingsMenu');
+        if (settingsMenu) {
+            const accelCheckbox = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'aceleración');
+
+            if (accelCheckbox) {
+                accelCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        accelGraph.style.display = 'block';
+                        currentSpeed = 0;
+                        targetSpeed = 0;
+                        accelData = [0];
+                        accelInterval = setInterval(simulateAccel, 50);
+                        showToast('🚗 Velocímetro activado');
+                    } else {
+                        accelGraph.style.display = 'none';
+                        if (accelInterval) clearInterval(accelInterval);
+                        showToast('🚗 Velocímetro desactivado');
+                    }
+                });
+            }
+
+            // Manejar checkbox de Packet loss
+            const packetLossCheckbox = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'Packet loss');
+
+            if (packetLossCheckbox) {
+                packetLossCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        packetLossGraph.style.display = 'block';
+                        packetLossData = [];
+                        packetLossInterval = setInterval(simulatePacketLoss, 100);
+                        showToast('📊 Packet loss activado');
+                    } else {
+                        packetLossGraph.style.display = 'none';
+                        if (packetLossInterval) clearInterval(packetLossInterval);
+                        showToast('📊 Packet loss desactivado');
+                    }
+                });
+            }
+        }
+
+        // ============================================================
+        //  SIDEBAR DE APPS
+        // ============================================================
+        const appSidebar = document.getElementById('appSidebar');
+        
+        if (settingsMenu) {
+            const appsCheck = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                .find(cb => cb.name === 'appCheck' && cb.closest('.dropdown-item')?.textContent.includes('mesero'));
+            
+            if (appsCheck) {
+                appsCheck.addEventListener('change', function() {
+                    if (this.checked) {
+                        appSidebar.classList.add('open');
+                        showToast('📱 Mesero abierto');
+                    } else {
+                        appSidebar.classList.remove('open');
+                        showToast('📱 Mesero cerrado');
+                    }
+                    // Recalcular layout de cámaras porque cambió el ancho disponible
+                    setTimeout(recalcLayout, 350); // esperar la transición
+                });
+            }
+        }
+
+        // ============================================================
+        //  CONFIGURACIÓN DE CONTROLES (modales)
+        // ============================================================
+        const ctrlModal = document.getElementById('ctrlModal');
+        const ctrlModalBox = document.getElementById('ctrlModalBox');
+
+        const ALL_ACTIONS = [
+            { id:'forward', label:'Acelerar / Adelante' },
+            { id:'backward', label:'Frenar / Atrás' },
+            { id:'left', label:'Girar izquierda' },
+            { id:'right', label:'Girar derecha' },
+            { id:'stop', label:'Detener' },
+            { id:'boost', label:'Turbo / Boost' },
+            { id:'horn', label:'Bocina' },
+            { id:'light', label:'Luces' },
+        ];
+
+        const defaultBindings = {
+            teclado: {
+                forward:'W', backward:'S', left:'A', right:'D',
+                stop:'Space', boost:'Shift', horn:'H', light:'L'
+            },
+            volante: {
+                forward:'RT (acelerador)', backward:'LT (freno)',
+                left:'Volante ←', right:'Volante →',
+                stop:'Botón A (negro sup)', boost:'Botón Y (amarillo)',
+                horn:'Botón B (azul)', light:'Botón L (negro inf)'
+            },
+            mando: {
+                forward:'RT', backward:'LT',
+                left:'Joystick izq ←', right:'Joystick izq →',
+                stop:'A', boost:'Y',
+                horn:'B', light:'X'
+            }
+        };
+
+        function loadBindings(ctrlType) {
+            try { return JSON.parse(localStorage.getItem('ctrl_bindings_'+ctrlType)) || {...defaultBindings[ctrlType]}; }
+            catch { return {...defaultBindings[ctrlType]}; }
+        }
+
+        function saveBindings(ctrlType, bindings) {
+            localStorage.setItem('ctrl_bindings_'+ctrlType, JSON.stringify(bindings));
+        }
+
+        function openCtrlModal(ctrlType) {
+            const bindings = loadBindings(ctrlType);
+            const titles = { teclado:'Configurar Teclado', volante:'Configurar Volante', mando:'Configurar Mando' };
+            let html = '<h2>⚙ '+(titles[ctrlType]||'Configurar')+'</h2>';
+            html += '<canvas id="ctrlImage" width="340" height="140" style="display:block;margin:0 auto 12px;border-radius:8px;background:#0d1117;"></canvas>';
+            ALL_ACTIONS.forEach(a => {
+                const key = bindings[a.id] || '—';
+                html += `<div class="modal-bind-row"><span class="modal-bind-action">${a.label}</span><span class="modal-bind-key" data-action="${a.id}" onclick="startListening(this,'${ctrlType}','${a.id}')">${key}</span><button class="modal-bind-btn" onclick="clearBinding('${ctrlType}','${a.id}')">✕</button></div>`;
+            });
+            html += `<div class="modal-actions"><button class="modal-btn-reset" onclick="resetBindings('${ctrlType}')">↺ Por defecto</button><button class="modal-btn-close" onclick="closeCtrlModal()">Cerrar</button></div>`;
+            ctrlModalBox.innerHTML = html;
+            ctrlModal.classList.add('open');
+
+            // Dibujar la imagen del control después de que el DOM se actualice
+            setTimeout(() => {
+                const imgCanvas = document.getElementById('ctrlImage');
+                if (imgCanvas) {
+                    imgCanvas.dataset.ctrlType = ctrlType;
+                    drawCtrlImage(imgCanvas, ctrlType, null);
+                }
+            }, 50);
+        }
+
+        function closeCtrlModal() { ctrlModal.classList.remove('open'); }
+        window.closeCtrlModal = closeCtrlModal;
+
+        // ─── Dibujar la imagen del control en el modal ───
+        window.drawCtrlImage = function(canvas, ctrlType, highlightAction) {
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width, h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+
+            if (ctrlType === 'teclado') drawKeyboardImage(ctx, w, h, highlightAction);
+            else if (ctrlType === 'volante') drawWheelImage(ctx, w, h, highlightAction);
+            else if (ctrlType === 'mando') drawGamepadImage(ctx, w, h, highlightAction);
+        };
+
+        // Posiciones visuales de cada acción en cada control
+        const actionPositions = {
+            teclado: {
+                forward:{x:170,y:30,w:32,h:32}, backward:{x:170,y:68,w:32,h:32},
+                left:{x:132,y:68,w:32,h:32}, right:{x:208,y:68,w:32,h:32},
+                stop:{x:120,y:105,w:130,h:25}, boost:{x:10,y:30,w:45,h:32}, horn:{x:260,y:30,w:32,h:32}, light:{x:298,y:30,w:32,h:32}
+            },
+            volante: {
+                forward:{x:290,y:55,r:9}, backward:{x:50,y:55,r:9},
+                left:{x:20,y:10,w:40,h:20}, right:{x:320,y:10,w:40,h:20},
+                stop:{x:290,y:85,r:7}, horn:{x:103,y:65,r:7}, light:{x:175,y:62,r:7}
+            },
+            mando: {
+                forward:{x:205,y:22,w:30,h:8}, backward:{x:80,y:22,w:30,h:8},
+                left:{x:90,y:67,r:18}, right:{x:220,y:67,r:18},
+                stop:{x:245,y:80,r:10}, boost:{x:245,y:40,r:10},
+                horn:{x:262,y:60,r:10}, light:{x:228,y:60,r:10}
+            }
+        };
+
+        function highlightBtn(ctx, pos, active) {
+            if (active) {
+                ctx.save();
+                ctx.shadowColor = '#58a6ff'; ctx.shadowBlur = 12;
+                ctx.strokeStyle = '#58a6ff'; ctx.lineWidth = 2;
+                if (pos.r) { ctx.beginPath(); ctx.arc(pos.x, pos.y, pos.r+2, 0, Math.PI*2); ctx.stroke(); }
+                else ctx.strokeRect(pos.x-2, pos.y-2, (pos.w||32)+4, (pos.h||32)+4);
+                ctx.restore();
+            }
+        }
+
+        function drawKeyboardImage(ctx, w, h, hl) {
+            ctx.fillStyle='#1a1a1a'; ctx.fillRect(0,0,w,h);
+            function key(x,y,ww,hh,label,actionId){
+                const active = hl===actionId;
+                ctx.fillStyle=active?'rgba(88,166,255,0.3)':'#2a2a2a';
+                ctx.strokeStyle=active?'#58a6ff':'#444'; ctx.lineWidth=active?2:1;
+                ctx.beginPath(); ctx.roundRect(x,y,ww,hh,5); ctx.fill(); ctx.stroke();
+                ctx.fillStyle='#c9d1d9'; ctx.font='bold 13px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillText(label,x+ww/2,y+hh/2);
+                if(active) highlightBtn(ctx,{x:x-1,y:y-1,w:ww,h:hh},true);
+            }
+            key(170,30,32,32,'W','forward');
+            key(132,68,32,32,'A','left');
+            key(170,68,32,32,'S','backward');
+            key(208,68,32,32,'D','right');
+            key(120,105,130,25,'SPACE','stop');
+            key(10,30,45,32,'Shift','boost');
+            key(260,30,32,32,'H','horn');
+            key(298,30,32,32,'L','light');
+            ctx.fillStyle='#8b949e'; ctx.font='9px Segoe UI'; ctx.textAlign='center';
+            ctx.fillText('⌨️ Teclado',w/2,h-8);
+        }
+
+        function drawWheelImage(ctx, w, h, hl) {
+            ctx.fillStyle='#0d1117'; ctx.fillRect(0,0,w,h);
+            const cx=170,cy=70,rOuter=55,rHub=28;
+            ctx.strokeStyle='#333'; ctx.lineWidth=10; ctx.beginPath(); ctx.arc(cx,cy,rOuter,0,Math.PI*2); ctx.stroke();
+            ctx.fillStyle='#1a1a1a'; ctx.beginPath(); ctx.arc(cx,cy,rHub,0,Math.PI*2); ctx.fill();
+            // Botones
+            function wb(bx,by,br,color,label,actionId){
+                const a=hl===actionId;
+                ctx.fillStyle=color; ctx.beginPath(); ctx.arc(bx,by,br,0,Math.PI*2); ctx.fill();
+                if(a) highlightBtn(ctx,{x:bx,y:by,r:br},true);
+                ctx.fillStyle='#fff'; ctx.font='bold 7px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillText(label,bx,by);
+            }
+            wb(103,65,7,'#d4a017','Y','horn');
+            wb(135,58,7,'#3b82f6','B','boost');
+            wb(160,90,7,'#ef4444','ST','forward');
+            wb(175,62,7,'#22c55e','G','light');
+            wb(190,100,7,'#444','A','stop');
+            wb(210,58,7,'#333','X','backward');
+            // Pedales
+            ctx.fillStyle='#333'; ctx.fillRect(40,110,30,18); ctx.fillRect(290,110,30,18);
+            ctx.fillStyle='#8b949e'; ctx.font='8px'; ctx.fillText('LT',55,122); ctx.fillText('RT',305,122);
+            if(hl==='backward') highlightBtn(ctx,{x:40,y:110,w:30,h:18},true);
+            if(hl==='forward') highlightBtn(ctx,{x:290,y:110,w:30,h:18},true);
+            // Palancas
+            ctx.fillStyle='#555'; ctx.fillRect(10,60,12,25); ctx.fillRect(318,60,12,25);
+            if(hl==='left') highlightBtn(ctx,{x:10,y:60,w:12,h:25},true);
+            if(hl==='right') highlightBtn(ctx,{x:318,y:60,w:12,h:25},true);
+            ctx.fillStyle='#8b949e'; ctx.font='9px'; ctx.textAlign='center'; ctx.fillText('🎮 Volante Thrustmaster',w/2,h-8);
+        }
+
+        function drawGamepadImage(ctx, w, h, hl) {
+            ctx.fillStyle='#0d1117'; ctx.fillRect(0,0,w,h);
+            // Cuerpo del mando
+            ctx.fillStyle='#1a1a1a'; ctx.strokeStyle='#444'; ctx.lineWidth=2;
+            ctx.beginPath(); ctx.roundRect(40,35,260,60,18); ctx.fill(); ctx.stroke();
+            // Joysticks
+            ctx.fillStyle='#333'; ctx.beginPath(); ctx.arc(90,65,18,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(190,65,18,0,Math.PI*2); ctx.fill();
+            if(hl==='left'||hl==='right') highlightBtn(ctx,{x:95-(hl==='left'?10:0),y:65,r:18},true);
+            // Botones
+            function gb(bx,by,color,label,actionId){
+                const a=hl===actionId;
+                ctx.fillStyle=color; ctx.beginPath(); ctx.arc(bx,by,10,0,Math.PI*2); ctx.fill();
+                if(a) highlightBtn(ctx,{x:bx,y:by,r:10},true);
+                ctx.fillStyle='#fff'; ctx.font='bold 8px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillText(label,bx,by);
+            }
+            gb(260,45,'#238636','A','stop');
+            gb(245,65,'#da3633','B','horn');
+            gb(275,65,'#58a6ff','X','light');
+            gb(260,85,'#d29922','Y','boost');
+            // Gatillos
+            ctx.fillStyle='#444'; ctx.fillRect(55,28,30,8); ctx.fillRect(195,28,30,8);
+            if(hl==='backward') highlightBtn(ctx,{x:55,y:28,w:30,h:8},true);
+            if(hl==='forward') highlightBtn(ctx,{x:195,y:28,w:30,h:8},true);
+            ctx.fillStyle='#8b949e'; ctx.font='9px'; ctx.textAlign='center'; ctx.fillText('LT',70,22); ctx.fillText('RT',210,22);
+            ctx.fillText('🕹️ Mando',w/2,h-8);
+        }
+
+        // ─── Actualizar highlight cuando se edita una tecla ───
+        function highlightCtrlImage(actionId) {
+            const img = document.getElementById('ctrlImage');
+            if (!img) return;
+            const ctrlType = img.dataset.ctrlType;
+            if (ctrlType) drawCtrlImage(img, ctrlType, actionId);
+        }
+
+        window.startListening = function(el, ctrlType, actionId) {
+            document.querySelectorAll('.modal-bind-key.listening').forEach(e => e.classList.remove('listening'));
+            el.classList.add('listening'); el.textContent = '...';
+            // Iluminar el botón en la imagen
+            highlightCtrlImage(actionId);
+            function capture(e) { e.preventDefault(); e.stopPropagation(); el.classList.remove('listening');
+                let nk; if(ctrlType==='teclado'){ nk=e.key.length===1?e.key.toUpperCase():e.key; if(nk===' ')nk='Space'; }
+                else { nk=prompt('Nombre del botón:',el.textContent)||el.textContent; }
+                const b=loadBindings(ctrlType); b[actionId]=nk; saveBindings(ctrlType,b); el.textContent=nk;
+                highlightCtrlImage(null); // quitar highlight
+                document.removeEventListener('keydown',capture,true); document.removeEventListener('click',capture,true); }
+            if(ctrlType==='teclado'){ document.addEventListener('keydown',capture,true); setTimeout(()=>document.addEventListener('click',capture,true),10); }
+            else { capture({preventDefault:()=>{},stopPropagation:()=>{}}); }
+        };
+
+        window.clearBinding = function(ctrlType, actionId) {
+            const b=loadBindings(ctrlType); b[actionId]='—'; saveBindings(ctrlType,b); openCtrlModal(ctrlType);
+        };
+
+        window.resetBindings = function(ctrlType) {
+            saveBindings(ctrlType,{...defaultBindings[ctrlType]}); openCtrlModal(ctrlType);
+        };
+
+        ctrlModal?.addEventListener('click', function(e) { if(e.target===ctrlModal) closeCtrlModal(); });
+
+        document.querySelectorAll('.cfg-trigger').forEach(icon => {
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation(); e.preventDefault();
+                openCtrlModal(this.dataset.ctrl);
+            });
+        });
+
+        // ============================================================
+        //  INICIO
+        // ============================================================
+        recalcLayout();
+        
+        // Mostrar control según selección por defecto
+        const selectedControl = document.querySelector('input[name="controlType"]:checked');
+        if (selectedControl) {
+            if (selectedControl.value === 'teclado') {
+                wasdKeys.style.display = 'block';
+            } else if (selectedControl.value === 'volante') {
+                steeringWheel.style.display = 'block';
+                drawSteeringWheel(0);
+                steeringInterval = setInterval(simulateSteering, 50);
+            } else if (selectedControl.value === 'mando') {
+                gamepadControl.style.display = 'block';
+                drawGamepad();
+            }
+        }
+        
+        setTimeout(() => showToast('🖱️ Arrastra cámaras · bordes para redimensionar'), 500);
+    })();
+</script>
+
+<!-- ═══ SCRIPT DEL SIDEBAR MESERO ═══ -->
+<script>
+// ─── Conexión ───
+function testConnectionSB() {
+    const url = document.getElementById('sbBaseUrl').value.trim();
+    if (!url) return logSB('⚠️ Ingresa una URL', 'err');
+    logSB('🔌 Probando conexión a ' + url + '...', 'info');
+    updateConnStatusSB('connecting');
+    
+    fetch(url + '/ping', { method: 'GET', mode: 'cors' })
+        .then(r => {
+            if (r.ok) {
+                updateConnStatusSB('online');
+                logSB('✅ Conexión exitosa', 'ok');
+            } else {
+                throw new Error('Status ' + r.status);
+            }
+        })
+        .catch(() => {
+            // Intentar con /health
+            fetch(url + '/health', { method: 'GET', mode: 'cors' })
+                .then(r => {
+                    if (r.ok) {
+                        updateConnStatusSB('online');
+                        logSB('✅ Conexión exitosa (health)', 'ok');
+                    } else {
+                        throw new Error('Status ' + r.status);
+                    }
+                })
+                .catch(() => {
+                    updateConnStatusSB('offline');
+                    logSB('❌ No se pudo conectar a ' + url, 'err');
+                });
+        });
+}
+
+function updateConnStatusSB(status) {
+    const dot = document.getElementById('sbConnDot');
+    const text = document.getElementById('sbConnText');
+    if (!dot || !text) return;
+    dot.classList.remove('online');
+    if (status === 'online') {
+        dot.classList.add('online');
+        text.textContent = 'Online';
+    } else if (status === 'connecting') {
+        text.textContent = 'Conectando...';
+    } else {
+        text.textContent = 'Offline';
+    }
+}
+
+// ─── Llamadas al API ───
+function callEndpointSB(method, path) {
+    const url = document.getElementById('sbBaseUrl').value.trim();
+    if (!url) return logSB('⚠️ Configura la URL primero', 'err');
+    const fullUrl = url + path;
+    logSB(method + ' ' + path, 'info');
+    
+    fetch(fullUrl, { method: method, mode: 'cors' })
+        .then(async r => {
+            const txt = await r.text();
+            if (r.ok) {
+                logSB('✅ ' + (txt || 'OK'), 'ok');
+            } else {
+                logSB('❌ ' + r.status + ' ' + txt, 'err');
+            }
+        })
+        .catch(err => logSB('❌ Error: ' + err.message, 'err'));
+}
+
+// ─── Audio personalizado ───
+function playCustomAudioSB() {
+    const url = document.getElementById('sbBaseUrl').value.trim();
+    const asset = document.getElementById('sbCustomAsset').value.trim();
+    const volume = document.getElementById('sbCustomVolume').value;
+    const force = document.getElementById('sbCustomForce').checked;
+    
+    if (!url) return logSB('⚠️ Configura la URL primero', 'err');
+    if (!asset) return logSB('⚠️ Ingresa ruta del audio', 'err');
+    
+    const params = new URLSearchParams();
+    if (volume) params.set('volume', volume);
+    if (force) params.set('force', 'true');
+    
+    const fullUrl = url + '/audio/play/' + asset + (params.toString() ? '?' + params : '');
+    logSB('▶️ Reproduciendo: ' + asset, 'info');
+    
+    fetch(fullUrl, { method: 'POST', mode: 'cors' })
+        .then(async r => {
+            const txt = await r.text();
+            if (r.ok) logSB('✅ Audio OK', 'ok');
+            else logSB('❌ ' + r.status + ' ' + txt, 'err');
+        })
+        .catch(err => logSB('❌ Error: ' + err.message, 'err'));
+}
+
+// ─── Configuración ───
+function updateConfigSB() {
+    const url = document.getElementById('sbBaseUrl').value.trim();
+    if (!url) return logSB('⚠️ Configura la URL primero', 'err');
+    
+    const body = {};
+    const cfgUrl = document.getElementById('sbCfgBaseUrl').value.trim();
+    const token = document.getElementById('sbCfgToken').value.trim();
+    const merchant = document.getElementById('sbCfgMerchantId').value.trim();
+    const product = document.getElementById('sbCfgProductId').value.trim();
+    
+    if (cfgUrl) body.base_url = cfgUrl;
+    if (token) body.token = token;
+    if (merchant) body.merchant_id = parseInt(merchant);
+    if (product) body.product_id = parseInt(product);
+    
+    if (!Object.keys(body).length) return logSB('⚠️ Sin cambios para guardar', 'err');
+    
+    logSB('💾 Guardando configuración...', 'info');
+    
+    fetch(url + '/config', {
+        method: 'PUT',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    })
+        .then(async r => {
+            const txt = await r.text();
+            if (r.ok) logSB('✅ Configuración guardada', 'ok');
+            else logSB('❌ ' + r.status + ' ' + txt, 'err');
+        })
+        .catch(err => logSB('❌ Error: ' + err.message, 'err'));
+}
+
+// ─── Logger ───
+function logSB(msg, type) {
+    const box = document.getElementById('sbLogBody');
+    if (!box) return;
+    const entry = document.createElement('div');
+    entry.className = 'log-entry log-' + (type || 'info');
+    const time = new Date().toLocaleTimeString();
+    entry.textContent = '[' + time + '] ' + msg;
+    box.appendChild(entry);
+    box.scrollTop = box.scrollHeight;
+}
+
+function clearLogsSB() {
+    const box = document.getElementById('sbLogBody');
+    if (box) box.innerHTML = '<div class="log-entry log-info">Consola limpia</div>';
+}
+</script>
+
+</body>
+</html>
