@@ -1003,7 +1003,7 @@
             backdrop-filter: blur(3px);
             border: 1px solid rgba(48, 54, 61, 0.12);
             border-radius: 50%;
-            padding: 6px;
+            padding: 10px;
             z-index: 500;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
@@ -1041,26 +1041,109 @@
             background: rgba(13, 17, 23, 0.5);
         }
 
+        /* ---- GRAPH DRAG & RESIZE HANDLES ---- */
+        .graph-draggable {
+            cursor: grab;
+            user-select: none;
+            transition: box-shadow 0.2s;
+        }
+        .graph-draggable:active { cursor: grabbing; }
+        .graph-draggable.dragging { cursor: grabbing; }
+        .graph-draggable:hover {
+            box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.35), 0 4px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .graph-draggable canvas {
+            pointer-events: none; /* el canvas no intercepta clicks */
+        }
+
+        .graph-drag-handle {
+            position: absolute;
+            top: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(201, 209, 217, 0.25);
+            font-size: 16px;
+            cursor: grab;
+            z-index: 20;
+            line-height: 1;
+            padding: 2px 10px;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s;
+            pointer-events: none; /* no necesario, el drag es desde el contenedor */
+        }
+        .graph-draggable:hover .graph-drag-handle { opacity: 1; }
+        .graph-draggable.dragging .graph-drag-handle { opacity: 1; color: rgba(88, 166, 255, 0.9); }
+
+        .graph-resize {
+            position: absolute;
+            background: transparent;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .graph-draggable:hover .graph-resize { opacity: 1; }
+
+        .graph-resize[data-resize="se"] {
+            bottom: 2px;
+            right: 2px;
+            width: 20px;
+            height: 20px;
+            cursor: nwse-resize;
+            background: rgba(88, 166, 255, 0.12);
+            border-right: 3px solid rgba(88, 166, 255, 0.5);
+            border-bottom: 3px solid rgba(88, 166, 255, 0.5);
+            border-radius: 0 0 10px 0;
+        }
+        .graph-resize[data-resize="se"]:hover {
+            background: rgba(88, 166, 255, 0.22);
+            border-color: rgba(88, 166, 255, 0.9);
+        }
+
+        .graph-resize[data-resize="s"] {
+            bottom: 2px;
+            left: 24px;
+            right: 24px;
+            height: 8px;
+            cursor: ns-resize;
+            background: rgba(88, 166, 255, 0.08);
+            border-bottom: 3px solid rgba(88, 166, 255, 0.4);
+        }
+        .graph-resize[data-resize="s"]:hover {
+            background: rgba(88, 166, 255, 0.18);
+            border-color: rgba(88, 166, 255, 0.9);
+        }
+
+        .graph-resize[data-resize="e"] {
+            top: 24px;
+            bottom: 24px;
+            right: 2px;
+            width: 8px;
+            cursor: ew-resize;
+            background: rgba(88, 166, 255, 0.08);
+            border-right: 3px solid rgba(88, 166, 255, 0.4);
+        }
+        .graph-resize[data-resize="e"]:hover {
+            background: rgba(88, 166, 255, 0.18);
+            border-color: rgba(88, 166, 255, 0.9);
+        }
+
         /* ---- TECLAS WASD ---- */
         .wasd-keys {
+            --scale: 1;
             position: fixed;
             top: 200px;
             left: 20px;
-            /* background: rgba(10, 14, 20, 0.35); */
             background: transparent;
-            /* backdrop-filter: blur(6px); */
-            /* border: 1px solid rgba(48, 54, 61, 0.25); */
-            /* border-radius: 12px; */
-            padding: 12px;
+            padding: calc(12px * var(--scale));
             z-index: 500;
-            /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); */
         }
 
         .wasd-row {
             display: flex;
             justify-content: center;
-            gap: 6px;
-            margin-bottom: 6px;
+            gap: calc(6px * var(--scale));
+            margin-bottom: calc(6px * var(--scale));
         }
 
         .wasd-row:last-child {
@@ -1068,20 +1151,17 @@
         }
 
         .wasd-key {
-            width: 40px;
-            height: 40px;
+            width:  calc(40px * var(--scale));
+            height: calc(40px * var(--scale));
             background: rgba(85, 89, 94, 0.4);
             opacity: 0.8;
-            /* background:transparent; */
-            /* border: 1px solid rgba(88, 166, 255, 0.3); */
-            border: 2px solid rgba(186, 186, 186, 0.3);
-            border-radius: 8px;
+            border: max(1px, calc(2px * var(--scale))) solid rgba(186, 186, 186, 0.3);
+            border-radius: calc(8px * var(--scale));
             display: flex;
             align-items: center;
             justify-content: center;
-            /* color: #8b949e; */
             color: #ffffff;
-            font-size: 16px;
+            font-size: calc(16px * var(--scale));
             font-weight: 600;
             transition: all 0.1s ease;
             user-select: none;
@@ -1091,7 +1171,6 @@
             background: rgba(88, 166, 255, 0.6);
             border-color: #58a6ff;
             color: #fff;
-            /* box-shadow: 0 0 12px rgba(88, 166, 255, 0.5); */
             transform: scale(0.95);
         }
 
@@ -1104,7 +1183,7 @@
             /* backdrop-filter: blur(6px); */
             /* border: 1px solid rgba(48, 54, 61, 0.25); */
             border-radius: 50%;
-            padding: 6px;
+            padding: 10px;
             z-index: 500;
             /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); */
         }
@@ -1123,7 +1202,7 @@
             /* backdrop-filter: blur(6px); */
             /* border: 1px solid rgba(48, 54, 61, 0.25); */
             /* border-radius: 12px; */
-            padding: 5px;
+            padding: 8px;
             z-index: 500;
             background: rgba(85, 89, 94, 0.4);
             opacity: 0.8;
@@ -1309,17 +1388,25 @@
     </div>
 
     <!-- GRÁFICO DE ACELERACIÓN -->
-    <div class="accel-graph" id="accelGraph" style="display: none;">
-        <canvas id="accelCanvas" width="120" height="120"></canvas>
+    <div class="accel-graph graph-draggable" id="accelGraph" style="display: none; width:200px; height:200px;">
+        <canvas id="accelCanvas" width="180" height="180"></canvas>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
     </div>
 
     <!-- GRÁFICO DE PACKET LOSS -->
-    <div class="packet-loss-graph" id="packetLossGraph" style="display: none;">
+    <div class="packet-loss-graph graph-draggable" id="packetLossGraph" style="display: none; width:244px; height:114px;">
         <canvas id="packetLossCanvas" width="220" height="90"></canvas>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
     </div>
 
     <!-- TECLAS WASD -->
-    <div class="wasd-keys" id="wasdKeys" style="display: none;">
+    <div class="wasd-keys graph-draggable" id="wasdKeys" style="display: none; width:160px; height:120px;">
         <div class="wasd-row">
             <div class="wasd-key" data-key="w">W</div>
         </div>
@@ -1328,16 +1415,28 @@
             <div class="wasd-key" data-key="s">S</div>
             <div class="wasd-key" data-key="d">D</div>
         </div>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
     </div>
 
     <!-- CONTROL DE VOLANTE -->
-    <div class="steering-wheel" id="steeringWheel" style="display: none;">
-        <canvas id="steeringCanvas" width="200" height="200"></canvas>
+    <div class="steering-wheel graph-draggable" id="steeringWheel" style="display: none; width:320px; height:320px;">
+        <canvas id="steeringCanvas" width="300" height="300"></canvas>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
     </div>
 
     <!-- CONTROL DE MANDO -->
-    <div class="gamepad-control" id="gamepadControl" style="display: none;">
-        <canvas id="gamepadCanvas" width="180" height="120"></canvas>
+    <div class="gamepad-control graph-draggable" id="gamepadControl" style="display: none; width:286px; height:196px;">
+        <canvas id="gamepadCanvas" width="270" height="180"></canvas>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
          <!-- <img src="assets/imgs/mando psp.png" alt="Mando PSP" class="gamepad-control-img"> -->
     </div>
 
@@ -1760,6 +1859,105 @@
         });
 
         // ============================================================
+        //  DRAG & RESIZE DE GRÁFICOS (acelerómetro, volante, mando)
+        // ============================================================
+        let graphDragData = null;
+        let graphResizeData = null;
+
+        function initGraphDragResize() {
+            document.querySelectorAll('.graph-draggable').forEach(container => {
+                if (container._graphDragInit) return;
+                container._graphDragInit = true;
+                const canvas = container.querySelector('canvas');
+
+                container.addEventListener('mousedown', function(e) {
+                    // ¿Resize handle? → prioridad máxima
+                    const rh = e.target.closest('.graph-resize');
+                    if (rh) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const type = rh.dataset.resize;
+                        const padding = parseInt(getComputedStyle(container).paddingTop) || 10;
+                        const isC = container.classList.contains('accel-graph') ||
+                                   container.classList.contains('steering-wheel');
+                        graphResizeData = {
+                            el: container, canvas: canvas, type: type,
+                            startX: e.clientX, startY: e.clientY,
+                            startW: container.offsetWidth, startH: container.offsetHeight,
+                            minW: 100, minH: 100, padding: padding, isCircle: isC
+                        };
+                        return;
+                    }
+
+                    // Cualquier otro click en el gráfico → drag
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const rect = container.getBoundingClientRect();
+
+                    // Convertir centrado CSS a posición explícita (acelerómetro)
+                    if (getComputedStyle(container).left === '50%') {
+                        container.style.left = rect.left + 'px';
+                        container.style.top = rect.top + 'px';
+                        container.style.transform = 'none';
+                    }
+
+                    container.classList.add('dragging');
+                    graphDragData = {
+                        el: container,
+                        startX: e.clientX, startY: e.clientY,
+                        startLeft: parseInt(container.style.left) || rect.left,
+                        startTop: parseInt(container.style.top) || rect.top
+                    };
+                });
+            });
+        }
+
+        document.addEventListener('mousemove', function(e) {
+            // Drag de gráfico
+            if (graphDragData) {
+                const dx = e.clientX - graphDragData.startX;
+                const dy = e.clientY - graphDragData.startY;
+                graphDragData.el.style.left = (graphDragData.startLeft + dx) + 'px';
+                graphDragData.el.style.top  = Math.max(0, graphDragData.startTop + dy) + 'px';
+            }
+
+            // Resize de gráfico
+            if (graphResizeData) {
+                const { el, canvas, type, startX, startY, startW, startH, minW, minH, padding, isCircle } = graphResizeData;
+                let w = startW, h = startH;
+                if (type === 'se' || type === 'e') w = Math.max(minW, startW + (e.clientX - startX));
+                if (type === 'se' || type === 's') h = Math.max(minH, startH + (e.clientY - startY));
+                if (isCircle && type === 'se') { const s = Math.max(w, h); w = h = s; }
+
+                el.style.width = w + 'px';
+                el.style.height = h + 'px';
+                // WASD: actualizar escala de las teclas
+                if (el.id === 'wasdKeys') el.style.setProperty('--scale', w / 160);
+                if (canvas) {
+                    canvas.width  = Math.max(40, w - padding * 2);
+                    canvas.height = Math.max(40, h - padding * 2);
+                }
+
+                // Redibujar según el gráfico
+                if (el.id === 'accelGraph') drawAccelGraph();
+                else if (el.id === 'steeringWheel') drawSteeringWheel(0);
+                else if (el.id === 'gamepadControl') drawGamepad();
+                else if (el.id === 'packetLossGraph') drawPacketLossGraph();
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (graphDragData) {
+                graphDragData.el.classList.remove('dragging');
+                graphDragData = null;
+            }
+            if (graphResizeData) graphResizeData = null;
+        });
+
+        // Se llamará después de que todas las variables de gráficos existan
+        // (ver initGraphDragResize() más abajo, tras las declaraciones)
+
+        // ============================================================
         //  LAYOUT DINÁMICO
         // ============================================================
         function recalcLayout() {
@@ -1967,9 +2165,10 @@
             const height = steeringCanvas.height;
             const cx = width / 2;
             const cy = height / 2;
-            const rimR = 88;
-            const spokeW = 10;
-            const hubR = 42;
+            const s = Math.min(width, height) / 300;
+            const rimR = Math.round(132 * s);
+            const spokeW = Math.max(2, Math.round(15 * s));
+            const hubR = Math.round(63 * s);
 
             ctx.clearRect(0, 0, width, height);
 
@@ -1979,12 +2178,12 @@
             ctx.rotate((angle * Math.PI) / 180);
 
             // ─── Aro exterior ───
-            const rimGrad = ctx.createRadialGradient(0, 0, rimR - 10, 0, 0, rimR + 6);
+            const rimGrad = ctx.createRadialGradient(0, 0, rimR - 10*s, 0, 0, rimR + 6*s);
             rimGrad.addColorStop(0, '#3a3a3a');
             rimGrad.addColorStop(0.5, '#2a2a2a');
             rimGrad.addColorStop(1, '#1a1a1a');
             ctx.strokeStyle = rimGrad;
-            ctx.lineWidth = 14;
+            ctx.lineWidth = Math.max(1, Math.round(14 * s));
             ctx.beginPath();
             ctx.arc(0, 0, rimR, 0, 2 * Math.PI);
             ctx.stroke();
@@ -1993,20 +2192,17 @@
             ctx.strokeStyle = '#2a2a2a';
             ctx.lineWidth = spokeW;
             ctx.lineCap = 'round';
-            // Radio izquierdo
             ctx.beginPath();
-            ctx.moveTo(-hubR + 5, -5);
-            ctx.lineTo(-rimR + 10, -25);
+            ctx.moveTo(-hubR + 8*s, -8*s);
+            ctx.lineTo(-rimR + 15*s, -38*s);
             ctx.stroke();
-            // Radio derecho
             ctx.beginPath();
-            ctx.moveTo(hubR - 5, -5);
-            ctx.lineTo(rimR - 10, -25);
+            ctx.moveTo(hubR - 8*s, -8*s);
+            ctx.lineTo(rimR - 15*s, -38*s);
             ctx.stroke();
-            // Radio inferior
             ctx.beginPath();
-            ctx.moveTo(0, hubR - 5);
-            ctx.lineTo(0, rimR - 10);
+            ctx.moveTo(0, hubR - 8*s);
+            ctx.lineTo(0, rimR - 15*s);
             ctx.stroke();
 
             // ─── Borde fino alrededor del aro ───
@@ -2022,12 +2218,13 @@
             ctx.arc(0, 0, hubR, 0, 2 * Math.PI);
             ctx.fill();
             ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = Math.max(1, Math.round(2 * s));
             ctx.beginPath();
             ctx.arc(0, 0, hubR, 0, 2 * Math.PI);
             ctx.stroke();
 
             // ─── BOTONES DEL VOLANTE ───
+            const bfs = Math.max(6, Math.round(12 * s));
             function drawBtn(bx, by, br, color, label) {
                 ctx.fillStyle = color;
                 ctx.beginPath();
@@ -2038,80 +2235,75 @@
                 ctx.stroke();
                 if (label) {
                     ctx.fillStyle = '#fff';
-                    ctx.font = 'bold 8px Segoe UI';
+                    ctx.font = 'bold ' + bfs + 'px Segoe UI';
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
                     ctx.fillText(label, bx, by);
                 }
             }
 
-            // ─── LADO IZQUIERDO (4 botones) ───
-            drawBtn(-30, -18, 7, '#d4a017', 'Y');   // Amarillo arriba
-            drawBtn(-32, 2, 7, '#3b82f6', 'B');     // Azul medio
-            drawBtn(-28, 22, 7, '#22c55e', 'G');     // Verde abajo
-            drawBtn(-20, 40, 6, '#444', 'X');        // Negro inferior
+            drawBtn(-45*s, -27*s, 11*s, '#d4a017', 'Y');
+            drawBtn(-48*s, 3*s, 11*s, '#3b82f6', 'B');
+            drawBtn(-42*s, 33*s, 11*s, '#22c55e', 'G');
+            drawBtn(-30*s, 60*s, 9*s, '#444', 'X');
 
-            // ─── LADO DERECHO (3 botones + dial) ───
-            drawBtn(30, -15, 7, '#333', 'A');        // Negro arriba
-            drawBtn(32, 8, 7, '#ef4444', 'R');       // Rojo medio
-            drawBtn(28, 28, 7, '#333', 'L');          // Negro abajo
+            drawBtn(45*s, -23*s, 11*s, '#333', 'A');
+            drawBtn(48*s, 12*s, 11*s, '#ef4444', 'R');
+            drawBtn(42*s, 42*s, 11*s, '#333', 'L');
 
             // Dial rotativo de 5 posiciones (inferior-derecha)
             ctx.fillStyle = '#333';
             ctx.beginPath();
-            ctx.arc(48, 38, 10, 0, 2 * Math.PI);
+            ctx.arc(72*s, 57*s, 15*s, 0, 2 * Math.PI);
             ctx.fill();
             ctx.strokeStyle = '#555';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = Math.max(1, Math.round(2 * s));
             ctx.stroke();
-            // 5 marcas alrededor del dial
             ctx.strokeStyle = '#888';
             ctx.lineWidth = 1;
             for (let i = 0; i < 5; i++) {
                 const a = (i / 5) * 2 * Math.PI - Math.PI / 2;
                 ctx.beginPath();
-                ctx.moveTo(48 + Math.cos(a) * 7, 38 + Math.sin(a) * 7);
-                ctx.lineTo(48 + Math.cos(a) * 10, 38 + Math.sin(a) * 10);
+                ctx.moveTo(72*s + Math.cos(a)*11*s, 57*s + Math.sin(a)*11*s);
+                ctx.lineTo(72*s + Math.cos(a)*15*s, 57*s + Math.sin(a)*15*s);
                 ctx.stroke();
             }
-            // Indicador del dial
             ctx.fillStyle = '#ef4444';
             ctx.beginPath();
-            ctx.arc(48, 33, 2.5, 0, 2 * Math.PI);
+            ctx.arc(72*s, 50*s, 4*s, 0, 2 * Math.PI);
             ctx.fill();
 
             // ─── ENGINE START (rojo, centro-inferior) ───
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
-            ctx.arc(0, 22, 9, 0, 2 * Math.PI);
+            ctx.arc(0, 33*s, 14*s, 0, 2 * Math.PI);
             ctx.fill();
             ctx.strokeStyle = '#991b1b';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = Math.max(1, Math.round(2 * s));
             ctx.stroke();
-            // Texto "START"
             ctx.fillStyle = '#fff';
-            ctx.font = 'bold 6px Segoe UI';
+            ctx.font = 'bold ' + Math.max(6, Math.round(9 * s)) + 'px Segoe UI';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('START', 0, 22);
+            ctx.fillText('START', 0, 33*s);
 
-            // ─── Palancas traseras (indicadores en los bordes) ───
+            // ─── Palancas traseras ───
             ctx.fillStyle = '#555';
-            ctx.fillRect(-rimR - 8, -6, 7, 12);  // palanca izq
-            ctx.fillRect(rimR + 1, -6, 7, 12);   // palanca der
+            ctx.fillRect(-rimR - 12*s, -9*s, 11*s, 18*s);
+            ctx.fillRect(rimR + 2*s, -9*s, 11*s, 18*s);
 
             // ─── Botones traseros ───
             ctx.fillStyle = '#ef4444';
-            ctx.fillRect(-rimR - 8, 8, 7, 5);   // botón trasero izq
-            ctx.fillRect(rimR + 1, 8, 7, 5);    // botón trasero der
+            ctx.fillRect(-rimR - 12*s, 12*s, 11*s, 8*s);
+            ctx.fillRect(rimR + 2*s, 12*s, 11*s, 8*s);
 
             ctx.restore();
 
             // ─── Ángulo actual ───
             ctx.fillStyle = '#8b949e';
-            ctx.font = '10px Segoe UI';
+            ctx.font = Math.max(8, Math.round(10 * s)) + 'px Segoe UI';
             ctx.textAlign = 'center';
-            ctx.fillText(Math.round(angle) + '°', cx, height - 5);
+            ctx.fillText(Math.round(angle) + '°', cx, height - Math.max(3, Math.round(5 * s)));
         }
 
         // Simular movimiento del volante
@@ -2138,45 +2330,49 @@
             const height = gamepadCanvas.height;
 
             ctx.clearRect(0, 0, width, height);
+            const sx = width / 270;
+            const sy = height / 180;
+            const gs = Math.min(sx, sy);
 
             // Cuerpo del mando
             ctx.fillStyle = 'rgba(48, 54, 61, 0.4)';
             ctx.strokeStyle = 'rgba(88, 166, 255, 0.3)';
-            ctx.lineWidth = 2;
-            
-            // Forma del mando
+            ctx.lineWidth = Math.max(1, Math.round(2 * gs));
+
             ctx.beginPath();
-            ctx.roundRect(20, 30, 140, 60, 15);
+            ctx.roundRect(30*sx, 45*sy, 210*sx, 90*sy, Math.round(22 * gs));
             ctx.fill();
             ctx.stroke();
 
             // Joystick izquierdo
             ctx.fillStyle = 'rgba(88, 166, 255, 0.3)';
             ctx.beginPath();
-            ctx.arc(50, 60, 12, 0, 2 * Math.PI);
+            ctx.arc(75*sx, 90*sy, 18*gs, 0, 2 * Math.PI);
             ctx.fill();
 
             // Joystick derecho
             ctx.beginPath();
-            ctx.arc(130, 60, 12, 0, 2 * Math.PI);
+            ctx.arc(195*sx, 90*sy, 18*gs, 0, 2 * Math.PI);
             ctx.fill();
 
             // Botones A, B, X, Y
             const buttons = [
-                { x: 110, y: 45, label: 'Y', color: '#d29922' },
-                { x: 125, y: 60, label: 'B', color: '#da3633' },
-                { x: 110, y: 75, label: 'A', color: '#238636' },
-                { x: 95, y: 60, label: 'X', color: '#58a6ff' }
+                { x: Math.round(165*sx), y: Math.round(68*sy), label: 'Y', color: '#d29922' },
+                { x: Math.round(188*sx), y: Math.round(90*sy), label: 'B', color: '#da3633' },
+                { x: Math.round(165*sx), y: Math.round(113*sy), label: 'A', color: '#238636' },
+                { x: Math.round(143*sx), y: Math.round(90*sy), label: 'X', color: '#58a6ff' }
             ];
 
+            const btnR = Math.round(9 * gs);
+            const btnFont = Math.max(7, Math.round(12 * gs));
             buttons.forEach(btn => {
                 ctx.fillStyle = btn.color;
                 ctx.beginPath();
-                ctx.arc(btn.x, btn.y, 6, 0, 2 * Math.PI);
+                ctx.arc(btn.x, btn.y, btnR, 0, 2 * Math.PI);
                 ctx.fill();
                 
                 ctx.fillStyle = '#fff';
-                ctx.font = 'bold 8px Segoe UI';
+                ctx.font = 'bold ' + btnFont + 'px Segoe UI';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(btn.label, btn.x, btn.y);
@@ -2184,16 +2380,14 @@
 
             // D-pad
             ctx.fillStyle = 'rgba(88, 166, 255, 0.4)';
-            // Vertical
-            ctx.fillRect(45, 50, 10, 20);
-            // Horizontal
-            ctx.fillRect(40, 55, 20, 10);
+            ctx.fillRect(68*sx, 75*sy, 15*sx, 30*sy);
+            ctx.fillRect(60*sx, 83*sy, 30*sx, 15*sy);
 
             // Etiquetas
             ctx.fillStyle = '#8b949e';
-            ctx.font = '10px Segoe UI';
+            ctx.font = Math.max(9, Math.round(14 * gs)) + 'px Segoe UI';
             ctx.textAlign = 'center';
-            ctx.fillText('GAMEPAD', width / 2, height - 5);
+            ctx.fillText('GAMEPAD', width / 2, height - Math.max(4, Math.round(8 * sy)));
         }
 
         // ============================================================
@@ -2232,7 +2426,23 @@
                     }
                 });
             }
-            return { cameras, graphs };
+            // Capturar posición, tamaño y visibilidad de todos los gráficos
+            const graphElements = {};
+            const graphIds = ['accelGraph','packetLossGraph','steeringWheel','gamepadControl','wasdKeys'];
+            graphIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    graphElements[id] = {
+                        visible: el.style.display !== 'none',
+                        top: el.style.top || '',
+                        left: el.style.left || '',
+                        transform: el.style.transform || '',
+                        width: el.style.width || '',
+                        height: el.style.height || ''
+                    };
+                }
+            });
+            return { cameras, graphs, graphElements };
         }
 
         // Aplicar estado al DOM (cámaras + gráficos)
@@ -2240,6 +2450,7 @@
             // Compatibilidad hacia atrás: formato antiguo era solo array de cámaras
             const cameras = Array.isArray(state) ? state : (state.cameras || []);
             const graphs = Array.isArray(state) ? {} : (state.graphs || {});
+            const graphElements = Array.isArray(state) ? {} : (state.graphElements || {});
 
             // --- Aplicar cámaras ---
             cameras.sort((a, b) => a.order - b.order);
@@ -2261,8 +2472,11 @@
                 if (!t.dataset.customHeight) t.dataset.customHeight = t.style.height;
             });
 
-            // --- Aplicar gráficos ---
+            // --- Aplicar gráficos (checkboxes) ---
             applyGraphState(graphs);
+
+            // --- Aplicar posición/tamaño de gráficos ---
+            applyGraphElements(graphElements);
         }
 
         // Aplicar estado de checkboxes de gráficos al DOM
@@ -2279,6 +2493,47 @@
                     cb.checked = graphs[name];
                     cb.dispatchEvent(new Event('change', { bubbles: true }));
                 }
+            });
+        }
+
+        // Restaurar posición, tamaño y visibilidad de los gráficos
+        function applyGraphElements(graphElements) {
+            if (!Object.keys(graphElements).length) return;
+            Object.keys(graphElements).forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const s = graphElements[id];
+                // Visibilidad
+                if (s.visible) {
+                    el.style.display = 'block';
+                } else {
+                    el.style.display = 'none';
+                }
+                // Posición
+                if (s.top) el.style.top = s.top;
+                if (s.left) el.style.left = s.left;
+                if (s.transform) el.style.transform = s.transform;
+                // Tamaño
+                if (s.width) {
+                    el.style.width = s.width;
+                    el.style.height = s.height || '';
+                    // WASD: actualizar escala
+                    if (id === 'wasdKeys') el.style.setProperty('--scale', parseInt(s.width) / 160);
+                    // Actualizar canvas interno si existe
+                    const canvas = el.querySelector('canvas');
+                    if (canvas) {
+                        const w = parseInt(s.width) || 200;
+                        const h = parseInt(s.height) || 200;
+                        const padding = parseInt(getComputedStyle(el).paddingTop) || 10;
+                        canvas.width  = Math.max(40, w - padding * 2);
+                        canvas.height = Math.max(40, h - padding * 2);
+                    }
+                }
+                // Redibujar si es canvas
+                if (id === 'accelGraph' && el.style.display !== 'none') drawAccelGraph();
+                else if (id === 'packetLossGraph' && el.style.display !== 'none') drawPacketLossGraph();
+                else if (id === 'steeringWheel' && el.style.display !== 'none') drawSteeringWheel(0);
+                else if (id === 'gamepadControl' && el.style.display !== 'none') drawGamepad();
             });
         }
 
@@ -2396,6 +2651,9 @@
         const packetLossCanvas = document.getElementById('packetLossCanvas');
         const accelCtx = accelCanvas?.getContext('2d');
         const packetLossCtx = packetLossCanvas?.getContext('2d');
+
+        // Activar drag & resize en los gráficos
+        initGraphDragResize();
 
         // Datos para los gráficos
         let accelData = [];
@@ -2536,10 +2794,11 @@
             const ctx = packetLossCtx;
             const width = packetLossCanvas.width;
             const height = packetLossCanvas.height;
-            const padLeft = 28;
-            const padRight = 8;
-            const padTop = 6;
-            const padBottom = 14;
+            const ps = Math.min(width / 220, height / 90);
+            const padLeft   = Math.round(28 * ps);
+            const padRight  = Math.round(8 * ps);
+            const padTop    = Math.round(6 * ps);
+            const padBottom = Math.round(14 * ps);
             const plotW = width - padLeft - padRight;
             const plotH = height - padTop - padBottom;
 
@@ -2594,13 +2853,13 @@
                     else ctx.lineTo(x, y);
                 });
                 ctx.strokeStyle = '#58a6ff';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = Math.max(1, Math.round(2 * ps));
                 ctx.lineJoin = 'round';
                 ctx.stroke();
 
                 // Glow
                 ctx.strokeStyle = 'rgba(88, 166, 255, 0.3)';
-                ctx.lineWidth = 4;
+                ctx.lineWidth = Math.round(4 * ps);
                 ctx.stroke();
 
                 // Punto en el último valor
@@ -2609,33 +2868,33 @@
                 const ly = padTop + plotH * (1 - last);
                 ctx.fillStyle = last > 0.6 ? '#da3633' : last > 0.3 ? '#d29922' : '#238636';
                 ctx.beginPath();
-                ctx.arc(lx, ly, 3, 0, 2 * Math.PI);
+                ctx.arc(lx, ly, Math.max(1, Math.round(3 * ps)), 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.fillStyle = '#fff';
                 ctx.beginPath();
-                ctx.arc(lx, ly, 1.5, 0, 2 * Math.PI);
+                ctx.arc(lx, ly, Math.max(1, Math.round(1.5 * ps)), 0, 2 * Math.PI);
                 ctx.fill();
             }
 
             // Labels Y
             ctx.fillStyle = '#8b949e';
-            ctx.font = '9px Segoe UI';
+            ctx.font = Math.max(7, Math.round(9 * ps)) + 'px Segoe UI';
             ctx.textAlign = 'right';
-            ctx.fillText('100%', padLeft - 4, padTop + 5);
-            ctx.fillText('50%', padLeft - 4, padTop + plotH / 2 + 3);
-            ctx.fillText('0%', padLeft - 4, padTop + plotH + 4);
+            ctx.fillText('100%', padLeft - Math.round(4*ps), padTop + Math.round(5*ps));
+            ctx.fillText('50%', padLeft - Math.round(4*ps), padTop + plotH / 2 + Math.round(3*ps));
+            ctx.fillText('0%', padLeft - Math.round(4*ps), padTop + plotH + Math.round(4*ps));
 
             // Label X (tiempo)
             ctx.textAlign = 'center';
-            ctx.fillText('→ t', width - 10, height - 2);
+            ctx.fillText('→ t', width - Math.round(10*ps), height - Math.round(2*ps));
 
             // Valor actual
             if (packetLossData.length > 0) {
                 const val = packetLossData[packetLossData.length - 1];
                 ctx.fillStyle = '#c9d1d9';
-                ctx.font = 'bold 10px Segoe UI';
+                ctx.font = 'bold ' + Math.max(8, Math.round(10 * ps)) + 'px Segoe UI';
                 ctx.textAlign = 'left';
-                ctx.fillText((val * 100).toFixed(1) + '%', width - 50, 10);
+                ctx.fillText((val * 100).toFixed(1) + '%', width - Math.round(50*ps), Math.round(10*ps));
             }
         }
 
