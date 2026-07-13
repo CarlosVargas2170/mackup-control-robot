@@ -446,6 +446,10 @@
             color: #f0f6fc;
             font-weight: 600;
             font-size: 12px;
+            transition: color 0.2s;
+        }
+        .cam-header .name:hover {
+            color: #58a6ff;
         }
 
         .cam-header .name i {
@@ -1849,6 +1853,74 @@
         });
         popoutObserver.observe(grid, { childList: true });
 
+        // ============================================================
+        //  EDICIÓN DE NOMBRES DE CÁMARAS (doble-click)
+        // ============================================================
+        function setupNameEditing(tile) {
+            const nameEl = tile.querySelector('.cam-header .name');
+            if (!nameEl || nameEl._nameEditSetup) return;
+            nameEl._nameEditSetup = true;
+            // Guardar nombre original para restaurar al cambiar layout
+            if (!tile.dataset.originalName) {
+                tile.dataset.originalName = nameEl.textContent.trim();
+            }
+            nameEl.style.cursor = 'text';
+            nameEl.title = 'Doble click para renombrar';
+
+            nameEl.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (nameEl.querySelector('.cam-name-input')) return; // ya en edición
+
+                // Guardar estado original
+                const iconHTML = nameEl.querySelector('i')?.outerHTML || '';
+                const currentText = nameEl.textContent.trim();
+
+                // Reemplazar con input
+                nameEl.innerHTML = iconHTML + ' ';
+                const input = document.createElement('input');
+                input.className = 'cam-name-input';
+                input.value = currentText;
+                input.style.cssText = 'background:#0d1117;border:1px solid #58a6ff;color:#f0f6fc;' +
+                    'font-size:12px;font-weight:600;padding:0 4px;border-radius:3px;width:100px;outline:none;';
+                nameEl.appendChild(input);
+                input.focus();
+                input.select();
+
+                function save() {
+                    const newName = input.value.trim() || currentText;
+                    nameEl.innerHTML = iconHTML + ' ' + newName;
+                    // Guardar en dataset para layouts
+                    tile.dataset.customName = newName;
+                    showToast('✏️ ' + tile.dataset.camId + ' → ' + newName);
+                }
+
+                input.addEventListener('blur', save);
+                input.addEventListener('keydown', function(ev) {
+                    if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+                    if (ev.key === 'Escape') {
+                        ev.preventDefault();
+                        nameEl.innerHTML = iconHTML + ' ' + currentText;
+                    }
+                });
+            });
+        }
+
+        // Inicializar en todos los tiles existentes
+        grid.querySelectorAll('.cam-tile').forEach(setupNameEditing);
+
+        // También en nuevos tiles (aprovechar observer existente)
+        const nameObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1 && node.matches && node.matches('.cam-tile')) {
+                        setupNameEditing(node);
+                    }
+                });
+            });
+        });
+        nameObserver.observe(grid, { childList: true });
+
         // Record dónde se hizo mousedown para evitar drag desde resize handles
         grid.addEventListener('mousedown', function(e) {
             dragDownTarget = e.target;
@@ -2208,6 +2280,7 @@
                 // Detener simulación del volante si estaba activa
                 if (steeringInterval) {
                     clearInterval(steeringInterval);
+                    // setea  a null el intervalo para que no quede colgado
                     steeringInterval = null;
                 }
                 
@@ -2503,7 +2576,8 @@
                     order: Array.from(grid.children).indexOf(t),
                     hidden: t.classList.contains('hidden'),
                     customWidth: t.dataset.customWidth || null,
-                    customHeight: t.dataset.customHeight || null
+                    customHeight: t.dataset.customHeight || null,
+                    customName: t.dataset.customName || null
                 });
             });
             // Capturar estado de checkboxes de gráficos
@@ -2559,6 +2633,19 @@
                 else { t.style.width = c.width; delete t.dataset.customWidth; }
                 if (c.customHeight) { t.style.height = c.customHeight; t.dataset.customHeight = c.customHeight; }
                 else { t.style.height = c.height; delete t.dataset.customHeight; }
+                // Restaurar nombre personalizado (o el original)
+                const nameEl = t.querySelector('.cam-header .name');
+                if (nameEl) {
+                    const iconHTML = nameEl.querySelector('i')?.outerHTML || '';
+                    if (c.customName) {
+                        nameEl.innerHTML = iconHTML + ' ' + c.customName;
+                        t.dataset.customName = c.customName;
+                    } else {
+                        const original = t.dataset.originalName || t.dataset.camId.toUpperCase();
+                        nameEl.innerHTML = iconHTML + ' ' + original;
+                        delete t.dataset.customName;
+                    }
+                }
                 grid.appendChild(t); // reordenar
             });
             // Marcar los visibles con customWidth para que recalcLayout no los pise
