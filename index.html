@@ -1266,9 +1266,13 @@
             display: block;
             border-radius: 8px;
         }
-        .gamepad-control-img{
-            height: 300px;
-            width: 300px;
+        .gamepad-control-img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            opacity: 0.6;
         }
 
         /* ---- RESPONSIVE ---- */
@@ -1485,12 +1489,11 @@
 
     <!-- CONTROL DE MANDO -->
     <div class="gamepad-control graph-draggable" id="gamepadControl" style="display: none; width:286px; height:196px;">
-        <canvas id="gamepadCanvas" width="270" height="180"></canvas>
+        <img src="assets/imgs/mando_ofi.png" alt="Mando PSP" class="gamepad-control-img">
         <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
         <div class="graph-resize" data-resize="se"></div>
         <div class="graph-resize" data-resize="s"></div>
         <div class="graph-resize" data-resize="e"></div>
-         <!-- <img src="assets/imgs/mando psp.png" alt="Mando PSP" class="gamepad-control-img"> -->
     </div>
 
     <!-- BOTONES OVERLAY (FIJOS) -->
@@ -3040,6 +3043,14 @@
                         showToast('🚗 Velocímetro desactivado');
                     }
                 });
+                // Si ya está checked al cargar la página → iniciar
+                if (accelCheckbox.checked) {
+                    accelGraph.style.display = 'block';
+                    currentSpeed = 0;
+                    targetSpeed = 0;
+                    accelData = [0];
+                    accelInterval = setInterval(simulateAccel, 50);
+                }
             }
 
             // Manejar checkbox de Packet loss
@@ -3059,6 +3070,12 @@
                         showToast('📊 Packet loss desactivado');
                     }
                 });
+                // Si ya está checked al cargar la página → iniciar
+                if (packetLossCheckbox.checked) {
+                    packetLossGraph.style.display = 'block';
+                    packetLossData = [];
+                    packetLossInterval = setInterval(simulatePacketLoss, 100);
+                }
             }
         }
 
