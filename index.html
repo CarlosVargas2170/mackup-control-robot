@@ -97,6 +97,32 @@
             border-radius: 10px;
         }
 
+        .sb-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .sb-btn-popout {
+            background: rgba(48, 54, 61, 0.4);
+            border: 1px solid #30363d;
+            color: #8b949e;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .sb-btn-popout:hover {
+            background: rgba(88, 166, 255, 0.2);
+            color: #58a6ff;
+            border-color: #58a6ff;
+        }
+
         .sb-conn-dot {
             width: 6px; height: 6px;
             border-radius: 50%;
@@ -485,6 +511,33 @@
             display: flex;
             align-items: center;
             gap: 5px;
+        }
+
+        .cam-body .cam-popout {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.65);
+            color: #8b949e;
+            width: 26px;
+            height: 26px;
+            border-radius: 6px;
+            border: 1px solid #30363d;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s, color 0.2s, background 0.2s;
+            z-index: 5;
+        }
+        .cam-tile:hover .cam-popout { opacity: 1; }
+        .cam-popout:hover {
+            color: #58a6ff;
+            background: rgba(0, 0, 0, 0.85);
+            border-color: #58a6ff;
         }
 
         .cam-body .badge-stream .dot {
@@ -1557,9 +1610,14 @@
                         <span class="sb-header-logo">🤖</span>
                         <h1>Mesero Robot</h1>
                     </div>
-                    <div class="sb-conn-badge" id="sbConnStatus">
-                        <span class="sb-conn-dot" id="sbConnDot"></span>
-                        <span id="sbConnText">Offline</span>
+                    <div class="sb-header-actions">
+                        <button class="sb-btn-popout" onclick="popoutSidebar()" title="Abrir en ventana independiente">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                        <div class="sb-conn-badge" id="sbConnStatus">
+                            <span class="sb-conn-dot" id="sbConnDot"></span>
+                            <span id="sbConnText">Offline</span>
+                        </div>
                     </div>
                 </div>
                 <div class="sb-url-bar">
@@ -1753,6 +1811,40 @@
             });
         });
         observer.observe(grid, { childList: true });
+
+        // Inyectar botón pop-out en cada cámara
+        function injectPopout(tile) {
+            if (tile.querySelector('.cam-popout')) return; // ya tiene
+            const body = tile.querySelector('.cam-body');
+            if (!body) return;
+            const btn = document.createElement('button');
+            btn.className = 'cam-popout';
+            btn.title = 'Abrir en nueva pestaña';
+            btn.innerHTML = '<i class="fas fa-external-link-alt"></i>';
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const img = body.querySelector('img');
+                const src = img?.src;
+                if (src) window.open(src, '_blank');
+            });
+            body.appendChild(btn);
+        }
+
+        // Inyectar en todos los tiles existentes
+        grid.querySelectorAll('.cam-tile').forEach(injectPopout);
+
+        // Inyectar en nuevos tiles que se agreguen dinámicamente
+        const popoutObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1 && node.matches && node.matches('.cam-tile')) {
+                        injectPopout(node);
+                    }
+                });
+            });
+        });
+        popoutObserver.observe(grid, { childList: true });
 
         // Record dónde se hizo mousedown para evitar drag desde resize handles
         grid.addEventListener('mousedown', function(e) {
@@ -3399,6 +3491,90 @@ function logSB(msg, type) {
 function clearLogsSB() {
     const box = document.getElementById('sbLogBody');
     if (box) box.innerHTML = '<div class="log-entry log-info">Consola limpia</div>';
+}
+
+// ─── Sidebar: pop-out / regresar ───
+let sidebarPopout = null;
+let sidebarPollInterval = null;
+
+function popoutSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    if (!sidebar) return;
+
+    // Si ya hay un pop-out abierto → cerrarlo y restaurar
+    if (sidebarPopout && !sidebarPopout.closed) {
+        sidebarPopout.close();
+        return;
+    }
+
+    // Obtener contenido del sidebar
+    const inner = document.querySelector('.app-sidebar-inner');
+    if (!inner) return;
+    const html = inner.innerHTML.replace(
+        'onclick="popoutSidebar()"',
+        'onclick="window.close()"'
+    ).replace(
+        'Abrir en ventana independiente',
+        'Cerrar y regresar'
+    );
+
+    // Obtener los estilos y script
+    const styleEl = document.querySelector('style');
+    const styles = styleEl ? styleEl.innerHTML : '';
+    const scripts = document.querySelectorAll('script');
+    const sbScript = scripts.length >= 3 ? scripts[scripts.length - 1].innerHTML : '';
+
+    sidebarPopout = window.open('', 'MeseroRobot', 'width=380,height=750');
+    sidebarPopout.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+        '<title>Mesero Robot</title>' +
+        '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">' +
+        '<style>');
+    sidebarPopout.document.write(styles);
+    sidebarPopout.document.write('body{overflow:hidden;height:100vh;}' +
+        '.app-layout{display:block!important;}' +
+        '.fullscreen-container{display:none!important;}' +
+        '.app-sidebar{width:100%!important;height:100vh!important;border-left:none!important;}' +
+        '.app-sidebar.open{width:100%!important;}' +
+        '.app-sidebar-inner{width:100%!important;height:100%!important;}' +
+        '</style></head><body>' +
+        '<div class="app-sidebar open"><div class="app-sidebar-inner">' + html + '</div></div>' +
+        '<script>' + sbScript + '</' + 'script>' +
+        '</body></html>');
+    sidebarPopout.document.close();
+
+    // Ocultar sidebar en la ventana principal
+    sidebar.classList.remove('open');
+
+    // Actualizar botón a "regresar"
+    updatePopoutBtn();
+
+    // Polling: detectar cuando se cierra la ventana pop-out
+    if (sidebarPollInterval) clearInterval(sidebarPollInterval);
+    sidebarPollInterval = setInterval(function() {
+        if (!sidebarPopout || sidebarPopout.closed) {
+            clearInterval(sidebarPollInterval);
+            sidebarPollInterval = null;
+            sidebarPopout = null;
+            // Restaurar sidebar en ventana principal
+            restoreSidebar();
+        }
+    }, 500);
+}
+
+function restoreSidebar() {
+    const sidebar = document.getElementById('appSidebar');
+    if (sidebar) sidebar.classList.add('open');
+    updatePopoutBtn();
+}
+
+function updatePopoutBtn() {
+    const btn = document.querySelector('.sb-btn-popout');
+    if (!btn) return;
+    const isPopped = sidebarPopout && !sidebarPopout.closed;
+    btn.title = isPopped ? 'Regresar a la ventana' : 'Abrir en ventana independiente';
+    btn.innerHTML = isPopped 
+        ? '<i class="fas fa-compress-arrows-alt"></i>' 
+        : '<i class="fas fa-external-link-alt"></i>';
 }
 </script>
 
