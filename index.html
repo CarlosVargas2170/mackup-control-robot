@@ -613,8 +613,8 @@
             backdrop-filter: blur(6px);
             padding: 8px 14px;
             border-radius: 12px;
-            border: 1px solid rgba(48, 54, 61, 0.4);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            /* border: 1px solid rgba(48, 54, 61, 0.4); */
+            /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); */
             pointer-events: auto;
         }
 
@@ -999,13 +999,13 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(10, 14, 20, 0.35);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(48, 54, 61, 0.25);
+            background: rgba(10, 14, 20, 0.12);
+            backdrop-filter: blur(3px);
+            border: 1px solid rgba(48, 54, 61, 0.12);
             border-radius: 50%;
             padding: 6px;
             z-index: 500;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         }
 
         .packet-loss-graph {
@@ -1032,7 +1032,7 @@
         .accel-graph canvas {
             display: block;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #1c2333, #0d1117);
+            background: radial-gradient(circle at 30% 30%, rgba(28, 35, 51, 0.4), rgba(13, 17, 23, 0.2));
         }
 
         .packet-loss-graph canvas {
@@ -1046,13 +1046,14 @@
             position: fixed;
             top: 200px;
             left: 20px;
-            background: rgba(10, 14, 20, 0.35);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(48, 54, 61, 0.25);
-            border-radius: 12px;
+            /* background: rgba(10, 14, 20, 0.35); */
+            background: transparent;
+            /* backdrop-filter: blur(6px); */
+            /* border: 1px solid rgba(48, 54, 61, 0.25); */
+            /* border-radius: 12px; */
             padding: 12px;
             z-index: 500;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); */
         }
 
         .wasd-row {
@@ -1069,13 +1070,17 @@
         .wasd-key {
             width: 40px;
             height: 40px;
-            background: rgba(48, 54, 61, 0.4);
-            border: 1px solid rgba(88, 166, 255, 0.3);
+            background: rgba(85, 89, 94, 0.4);
+            opacity: 0.8;
+            /* background:transparent; */
+            /* border: 1px solid rgba(88, 166, 255, 0.3); */
+            border: 2px solid rgba(186, 186, 186, 0.3);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #8b949e;
+            /* color: #8b949e; */
+            color: #ffffff;
             font-size: 16px;
             font-weight: 600;
             transition: all 0.1s ease;
@@ -1086,7 +1091,7 @@
             background: rgba(88, 166, 255, 0.6);
             border-color: #58a6ff;
             color: #fff;
-            box-shadow: 0 0 12px rgba(88, 166, 255, 0.5);
+            /* box-shadow: 0 0 12px rgba(88, 166, 255, 0.5); */
             transform: scale(0.95);
         }
 
@@ -1095,13 +1100,13 @@
             position: fixed;
             top: 200px;
             left: 20px;
-            background: rgba(10, 14, 20, 0.35);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(48, 54, 61, 0.25);
+            /* background: rgba(10, 14, 20, 0.35); */
+            /* backdrop-filter: blur(6px); */
+            /* border: 1px solid rgba(48, 54, 61, 0.25); */
             border-radius: 50%;
             padding: 6px;
             z-index: 500;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); */
         }
 
         .steering-wheel canvas {
@@ -1114,18 +1119,24 @@
             position: fixed;
             top: 200px;
             left: 20px;
-            background: rgba(10, 14, 20, 0.35);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(48, 54, 61, 0.25);
-            border-radius: 12px;
-            padding: 10px;
+            /* background: rgba(10, 14, 20, 0.35); */
+            /* backdrop-filter: blur(6px); */
+            /* border: 1px solid rgba(48, 54, 61, 0.25); */
+            /* border-radius: 12px; */
+            padding: 5px;
             z-index: 500;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            background: rgba(85, 89, 94, 0.4);
+            opacity: 0.8;
+            /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); */
         }
 
         .gamepad-control canvas {
             display: block;
             border-radius: 8px;
+        }
+        .gamepad-control-img{
+            height: 300px;
+            width: 300px;
         }
 
         /* ---- RESPONSIVE ---- */
@@ -1167,17 +1178,18 @@
         <div class="cam-tile" data-cam-id="cam1" style="width:calc(50% - 5px); height:48%;">
             <div class="cam-header">
                 <span class="name"><i class="fas fa-video"></i> CAM FRONT</span>
-                <span class="status"><span class="online">● ONLINE</span> 30 FPS · 1080p</span>
+                <span class="status"><span class="online">● ONLINE</span></span>
+                <!-- <span class="status"><span class="online">● ONLINE</span> 30 FPS · 1080p</span> -->
             </div>
             <div class="cam-body">
                 <img src="https://picsum.photos/seed/cctv-corridor/640/360" alt="CAM FRONT">
                 <span class="badge-stream"><span class="dot"></span> LIVE</span>
             </div>
             <div class="cam-footer">
-                <span><i class="fas fa-tachometer-alt"></i> 0.2% PL</span>
+                <!-- <span><i class="fas fa-tachometer-alt"></i> 0.2% PL</span>
                 <span><i class="fas fa-clock"></i> 18ms</span>
                 <span><i class="fas fa-robot"></i> 1.2 m/s</span>
-                <span class="rec"><i class="fas fa-circle"></i> REC</span>
+                <span class="rec"><i class="fas fa-circle"></i> REC</span> -->
             </div>
             <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
             <div class="resize-handle se" data-resize="se"></div>
@@ -1189,17 +1201,17 @@
         <div class="cam-tile" data-cam-id="cam2" style="width:calc(50% - 5px); height:48%;">
             <div class="cam-header">
                 <span class="name"><i class="fas fa-video"></i> CAM REAR</span>
-                <span class="status"><span class="online">● ONLINE</span> 25 FPS · 720p</span>
+                <span class="status"><span class="online">● ONLINE</span></span>
             </div>
             <div class="cam-body">
                 <img src="https://picsum.photos/seed/warehouse-cam/640/360" alt="CAM REAR">
                 <span class="badge-stream"><span class="dot"></span> LIVE</span>
             </div>
             <div class="cam-footer">
-                <span><i class="fas fa-tachometer-alt"></i> 0.5% PL</span>
+                <!-- <span><i class="fas fa-tachometer-alt"></i> 0.5% PL</span>
                 <span><i class="fas fa-clock"></i> 22ms</span>
                 <span><i class="fas fa-robot"></i> 1.0 m/s</span>
-                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span> -->
             </div>
             <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
             <div class="resize-handle se" data-resize="se"></div>
@@ -1211,17 +1223,17 @@
         <div class="cam-tile" data-cam-id="cam3" style="width:100%; height:calc(50% - 5px);">
             <div class="cam-header">
                 <span class="name"><i class="fas fa-video"></i> CAM WIDE</span>
-                <span class="status"><span class="online">● ONLINE</span> 20 FPS · 720p</span>
+                <span class="status"><span class="online">● ONLINE</span></span>
             </div>
             <div class="cam-body">
                 <img src="https://picsum.photos/seed/perimeter-cam/640/360" alt="CAM WIDE">
                 <span class="badge-stream"><span class="dot"></span> LIVE</span>
             </div>
             <div class="cam-footer">
-                <span><i class="fas fa-tachometer-alt"></i> 0.1% PL</span>
+                <!-- <span><i class="fas fa-tachometer-alt"></i> 0.1% PL</span>
                 <span><i class="fas fa-clock"></i> 20ms</span>
                 <span><i class="fas fa-robot"></i> 1.4 m/s</span>
-                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span> -->
             </div>
             <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
             <div class="resize-handle se" data-resize="se"></div>
@@ -1233,17 +1245,17 @@
         <div class="cam-tile hidden" data-cam-id="cam4" style="width:calc(50% - 5px); height:48%;">
             <div class="cam-header">
                 <span class="name"><i class="fas fa-video"></i> CAM ENTRADA</span>
-                <span class="status"><span class="online">● ONLINE</span> 30 FPS · 1080p</span>
+                <span class="status"><span class="online">● ONLINE</span></span>
             </div>
             <div class="cam-body">
                 <img src="https://picsum.photos/seed/entrance-cam/640/360" alt="CAM ENTRADA">
                 <span class="badge-stream"><span class="dot"></span> LIVE</span>
             </div>
             <div class="cam-footer">
-                <span><i class="fas fa-tachometer-alt"></i> 0.3% PL</span>
+                <!-- <span><i class="fas fa-tachometer-alt"></i> 0.3% PL</span>
                 <span><i class="fas fa-clock"></i> 15ms</span>
                 <span><i class="fas fa-robot"></i> 0.8 m/s</span>
-                <span class="rec"><i class="fas fa-circle"></i> REC</span>
+                <span class="rec"><i class="fas fa-circle"></i> REC</span> -->
             </div>
             <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
             <div class="resize-handle se" data-resize="se"></div>
@@ -1255,17 +1267,17 @@
         <div class="cam-tile hidden" data-cam-id="cam5" style="width:calc(50% - 5px); height:48%;">
             <div class="cam-header">
                 <span class="name"><i class="fas fa-video"></i> CAM PASILLO</span>
-                <span class="status"><span class="online">● ONLINE</span> 25 FPS · 720p</span>
+                <span class="status"><span class="online">● ONLINE</span></span>
             </div>
             <div class="cam-body">
                 <img src="https://picsum.photos/seed/hallway-cam/640/360" alt="CAM PASILLO">
                 <span class="badge-stream"><span class="dot"></span> LIVE</span>
             </div>
             <div class="cam-footer">
-                <span><i class="fas fa-tachometer-alt"></i> 0.4% PL</span>
+                <!-- <span><i class="fas fa-tachometer-alt"></i> 0.4% PL</span>
                 <span><i class="fas fa-clock"></i> 19ms</span>
                 <span><i class="fas fa-robot"></i> 0.5 m/s</span>
-                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span> -->
             </div>
             <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
             <div class="resize-handle se" data-resize="se"></div>
@@ -1277,17 +1289,17 @@
         <div class="cam-tile hidden" data-cam-id="cam6" style="width:calc(50% - 5px); height:48%;">
             <div class="cam-header">
                 <span class="name"><i class="fas fa-video"></i> CAM ESTAC.</span>
-                <span class="status"><span class="online">● ONLINE</span> 20 FPS · 720p</span>
+                <span class="status"><span class="online">● ONLINE</span></span>
             </div>
             <div class="cam-body">
                 <img src="https://picsum.photos/seed/parking-sv/640/360" alt="CAM ESTAC.">
                 <span class="badge-stream"><span class="dot"></span> LIVE</span>
             </div>
             <div class="cam-footer">
-                <span><i class="fas fa-tachometer-alt"></i> 0.1% PL</span>
+                <!-- <span><i class="fas fa-tachometer-alt"></i> 0.1% PL</span>
                 <span><i class="fas fa-clock"></i> 10ms</span>
                 <span><i class="fas fa-robot"></i> 1.1 m/s</span>
-                <span><i class="fas fa-circle" style="color:#555;"></i> --</span>
+                <span><i class="fas fa-circle" style="color:#555;"></i> --</span> -->
             </div>
             <div class="drag-handle"><i class="fas fa-grip-lines"></i></div>
             <div class="resize-handle se" data-resize="se"></div>
@@ -1326,6 +1338,7 @@
     <!-- CONTROL DE MANDO -->
     <div class="gamepad-control" id="gamepadControl" style="display: none;">
         <canvas id="gamepadCanvas" width="180" height="120"></canvas>
+         <!-- <img src="assets/imgs/mando psp.png" alt="Mando PSP" class="gamepad-control-img"> -->
     </div>
 
     <!-- BOTONES OVERLAY (FIJOS) -->
@@ -1363,32 +1376,32 @@
                 <span class="tooltip">Ajustes</span>
             </button>
             <div class="dropdown-menu" id="settingsMenu">
-                <label class="dropdown-item">
+                <!-- <label class="dropdown-item">
                     <input type="checkbox" checked> <span class="label-text">controlador</span>
-                </label>
+                </label> -->
                 <label class="dropdown-item">
                     <input type="checkbox" checked> <span class="label-text">Packet loss</span>
                 </label>
                 <label class="dropdown-item">
-                    <input type="checkbox"> <span class="label-text">aceleración</span>
+                    <input type="checkbox"> <span class="label-text">Aceleración</span>
                 </label>
                 <div class="dropdown-item has-submenu">
                     <div class="submenu-trigger">
                         <i class="fas fa-gamepad" style="width:15px;color:#58a6ff;"></i>
-                        <span class="label-text">control</span>
+                        <span class="label-text">Controles</span>
                         <span class="chevron"><i class="fas fa-chevron-right"></i></span>
                     </div>
                     <div class="submenu">
                         <label class="dropdown-item" style="justify-content:space-between;">
-                            <span><input type="radio" name="controlType" value="teclado" checked> teclado</span>
+                            <span><input type="radio" name="controlType" value="teclado" checked> Teclado</span>
                             <span class="cfg-trigger" data-ctrl="teclado" title="Configurar teclas">⚙</span>
                         </label>
                         <label class="dropdown-item" style="justify-content:space-between;">
-                            <span><input type="radio" name="controlType" value="volante"> volante</span>
+                            <span><input type="radio" name="controlType" value="volante"> Volante</span>
                             <span class="cfg-trigger" data-ctrl="volante" title="Configurar volante">⚙</span>
                         </label>
                         <label class="dropdown-item" style="justify-content:space-between;">
-                            <span><input type="radio" name="controlType" value="mando"> mando</span>
+                            <span><input type="radio" name="controlType" value="mando"> Mando</span>
                             <span class="cfg-trigger" data-ctrl="mando" title="Configurar mando">⚙</span>
                         </label>
                     </div>
@@ -1396,33 +1409,35 @@
                 <div class="dropdown-item has-submenu">
                     <div class="submenu-trigger">
                         <i class="fas fa-th-large" style="width:15px;color:#58a6ff;"></i>
-                        <span class="label-text">apps</span>
+                        <span class="label-text">Aplicaciones</span>
                         <span class="chevron"><i class="fas fa-chevron-right"></i></span>
                     </div>
                     <div class="submenu">
                         <label class="dropdown-item">
-                            <input type="checkbox" name="appCheck"> mesero
+                            <input type="checkbox" name="appCheck"> Mesero Robot
                         </label>
                     </div>
                 </div>
-                <div class="dropdown-item has-submenu">
-                    <div class="submenu-trigger">
-                        <i class="fas fa-object-group" style="width:15px;color:#58a6ff;"></i>
-                        <span class="label-text">layouts</span>
-                        <span class="chevron"><i class="fas fa-chevron-right"></i></span>
-                    </div>
-                    <div class="submenu" id="layoutsSubmenu">
-                        <div class="dropdown-item" style="font-size:11px;color:#555;cursor:default;padding:4px 16px;">
-                            (sin layouts guardados)
-                        </div>
+            </div>
+        </div>
+        <div class="btn-divider"></div>
+        <div class="dropdown-wrapper">
+            <button class="btn-icon" id="layoutsToggle" title="Layouts guardados">
+                <i class="fas fa-object-group"></i>
+                <span class="tooltip">Layouts</span>
+            </button>
+            <div class="dropdown-menu" id="layoutsDropdown">
+                <div id="layoutsList">
+                    <div class="dropdown-item" style="font-size:11px;color:#555;cursor:default;padding:4px 16px;">
+                        (sin layouts guardados)
                     </div>
                 </div>
                 <div class="dropdown-divider"></div>
                 <div class="dropdown-actions">
-                    <button class="btn-icon" title="Guardar configuración">
+                    <button class="btn-icon" id="saveLayoutBtn" title="Guardar layout actual">
                         <i class="fas fa-save"></i>
                     </button>
-                    <button class="btn-icon" title="Crear nueva configuración">
+                    <button class="btn-icon" id="createLayoutBtn" title="Crear nuevo layout">
                         <i class="fas fa-plus-circle"></i>
                     </button>
                 </div>
@@ -1827,6 +1842,7 @@
                 e.stopPropagation();
                 e.preventDefault();
                 document.getElementById('settingsMenu')?.classList.remove('open');
+                document.getElementById('layoutsDropdown')?.classList.remove('open');
                 camDropdown.classList.toggle('open');
                 this.style.transform = 'scale(0.92)';
                 setTimeout(() => { this.style.transform = ''; }, 150);
@@ -1840,7 +1856,22 @@
                 e.stopPropagation();
                 e.preventDefault();
                 camDropdown?.classList.remove('open');
+                document.getElementById('layoutsDropdown')?.classList.remove('open');
                 settingsDropdown.classList.toggle('open');
+                this.style.transform = 'scale(0.92)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+        }
+
+        const layoutsToggle = document.getElementById('layoutsToggle');
+        const layoutsDropdown = document.getElementById('layoutsDropdown');
+        if (layoutsToggle && layoutsDropdown) {
+            layoutsToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                camDropdown?.classList.remove('open');
+                document.getElementById('settingsMenu')?.classList.remove('open');
+                layoutsDropdown.classList.toggle('open');
                 this.style.transform = 'scale(0.92)';
                 setTimeout(() => { this.style.transform = ''; }, 150);
             });
@@ -2171,7 +2202,7 @@
         const STORAGE_KEY = 'camera_layouts';
         let activeLayoutName = null;
 
-        // Capturar estado actual del DOM
+        // Capturar estado actual del DOM (cámaras + gráficos)
         function captureState() {
             const tiles = grid.querySelectorAll('.cam-tile');
             const cameras = [];
@@ -2186,11 +2217,31 @@
                     customHeight: t.dataset.customHeight || null
                 });
             });
-            return cameras;
+            // Capturar estado de checkboxes de gráficos
+            const graphs = {};
+            const settingsMenu = document.getElementById('settingsMenu');
+            if (settingsMenu) {
+                const checkboxes = settingsMenu.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => {
+                    const label = cb.closest('.dropdown-item')?.querySelector('.label-text');
+                    if (label) {
+                        const name = label.textContent.trim();
+                        if (name === 'Aceleración' || name === 'Packet loss') {
+                            graphs[name] = cb.checked;
+                        }
+                    }
+                });
+            }
+            return { cameras, graphs };
         }
 
-        // Aplicar estado al DOM
-        function applyState(cameras) {
+        // Aplicar estado al DOM (cámaras + gráficos)
+        function applyState(state) {
+            // Compatibilidad hacia atrás: formato antiguo era solo array de cámaras
+            const cameras = Array.isArray(state) ? state : (state.cameras || []);
+            const graphs = Array.isArray(state) ? {} : (state.graphs || {});
+
+            // --- Aplicar cámaras ---
             cameras.sort((a, b) => a.order - b.order);
             const visible = [];
             cameras.forEach(c => {
@@ -2209,6 +2260,26 @@
                 if (!t.dataset.customWidth) t.dataset.customWidth = t.style.width;
                 if (!t.dataset.customHeight) t.dataset.customHeight = t.style.height;
             });
+
+            // --- Aplicar gráficos ---
+            applyGraphState(graphs);
+        }
+
+        // Aplicar estado de checkboxes de gráficos al DOM
+        function applyGraphState(graphs) {
+            const settingsMenu = document.getElementById('settingsMenu');
+            if (!settingsMenu || !Object.keys(graphs).length) return;
+
+            const checkboxes = settingsMenu.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                const label = cb.closest('.dropdown-item')?.querySelector('.label-text');
+                if (!label) return;
+                const name = label.textContent.trim();
+                if (graphs.hasOwnProperty(name) && cb.checked !== graphs[name]) {
+                    cb.checked = graphs[name];
+                    cb.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
         }
 
         // Persistencia en localStorage
@@ -2223,7 +2294,7 @@
 
         // Renderizar lista de layouts en el submenú
         function renderLayoutList() {   
-            const sub = document.getElementById('layoutsSubmenu');
+            const sub = document.getElementById('layoutsList');
             if (!sub) return;
             const layouts = loadLayouts();
             const names = Object.keys(layouts);
@@ -2291,20 +2362,27 @@
             showToast('➕ Layout "' + activeLayoutName + '" creado');
         }
 
-        // Handlers de los botones
-        document.querySelectorAll('.dropdown-actions .btn-icon').forEach(btn => {
-            btn.addEventListener('click', function(e) {
+        // Handlers de los botones de layout (save / create)
+        const saveLayoutBtn = document.getElementById('saveLayoutBtn');
+        const createLayoutBtn = document.getElementById('createLayoutBtn');
+
+        if (saveLayoutBtn) {
+            saveLayoutBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 this.style.transform = 'scale(0.92)';
                 setTimeout(() => { this.style.transform = ''; }, 150);
-                const icon = this.querySelector('i');
-                if (icon?.classList.contains('fa-save')) {
-                    saveCurrentLayout();
-                } else if (icon?.classList.contains('fa-plus-circle')) {
-                    createNewLayout();
-                }
+                saveCurrentLayout();
             });
-        });
+        }
+
+        if (createLayoutBtn) {
+            createLayoutBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                this.style.transform = 'scale(0.92)';
+                setTimeout(() => { this.style.transform = ''; }, 150);
+                createNewLayout();
+            });
+        }
 
         // Renderizar lista al cargar
         renderLayoutList();
@@ -2346,35 +2424,17 @@
             const endAngle = (405 * Math.PI) / 180;
             const maxSpeed = 120; // km/h
 
-            // Dibujar arco de fondo
-            ctx.strokeStyle = 'rgba(48, 54, 61, 0.5)';
+            // Dibujar arco de fondo (semi-transparente)
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.2)';
             ctx.lineWidth = 20;
             ctx.lineCap = 'round';
             ctx.beginPath();
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.stroke();
 
-            // Dibujar arco de color según velocidad
             const currentSpeed = accelData.length > 0 ? accelData[accelData.length - 1] : 0;
-            const speedAngle = startAngle + ((currentSpeed / maxSpeed) * (endAngle - startAngle));
-            
-            let arcColor;
-            if (currentSpeed < 60) arcColor = '#238636'; // verde
-            else if (currentSpeed < 90) arcColor = '#d29922'; // amarillo
-            else arcColor = '#da3633'; // rojo
 
-            ctx.strokeStyle = arcColor;
-            ctx.lineWidth = 20;
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, startAngle, speedAngle);
-            ctx.stroke();
-
-            // Dibujar marcas y números
-            ctx.fillStyle = '#8b949e';
-            ctx.font = '12px Segoe UI';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
+            // Dibujar marcas y números (semi-transparentes)
             for (let speed = 0; speed <= maxSpeed; speed += 20) {
                 const angle = startAngle + ((speed / maxSpeed) * (endAngle - startAngle));
                 const isMain = speed % 40 === 0;
@@ -2384,7 +2444,7 @@
                 const markStart = radius - markLength;
                 const markEnd = radius;
                 
-                ctx.strokeStyle = isMain ? '#c9d1d9' : '#8b949e';
+                ctx.strokeStyle = isMain ? 'rgba(201, 209, 217, 0.35)' : 'rgba(139, 148, 158, 0.25)';
                 ctx.lineWidth = isMain ? 3 : 2;
                 ctx.beginPath();
                 ctx.moveTo(
@@ -2399,6 +2459,10 @@
 
                 // Número (solo en marcas principales)
                 if (isMain) {
+                    ctx.fillStyle = 'rgba(139, 148, 158, 0.45)';
+                    ctx.font = '12px Segoe UI';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
                     const textRadius = radius - 30;
                     const textX = centerX + textRadius * Math.cos(angle);
                     const textY = centerY + textRadius * Math.sin(angle);
@@ -2406,12 +2470,12 @@
                 }
             }
 
-            // Dibujar aguja
+            // Dibujar aguja (INDICADOR FUERTE)
             const needleAngle = startAngle + ((currentSpeed / maxSpeed) * (endAngle - startAngle));
             const needleLength = radius - 10;
             
-            // Sombra de la aguja
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            // Sombra sutil de la aguja
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.15)';
             ctx.lineWidth = 4;
             ctx.lineCap = 'round';
             ctx.beginPath();
@@ -2422,7 +2486,9 @@
             );
             ctx.stroke();
 
-            // Aguja principal
+            // Aguja principal (FUERTE - color sólido brillante)
+            ctx.shadowColor = '#58a6ff';
+            ctx.shadowBlur = 8;
             ctx.strokeStyle = '#58a6ff';
             ctx.lineWidth = 3;
             ctx.beginPath();
@@ -2432,27 +2498,34 @@
                 centerY + needleLength * Math.sin(needleAngle)
             );
             ctx.stroke();
+            ctx.shadowBlur = 0; // reset shadow
 
-            // Centro de la aguja
+            // Centro de la aguja (FUERTE)
+            ctx.shadowColor = '#58a6ff';
+            ctx.shadowBlur = 6;
             ctx.fillStyle = '#58a6ff';
             ctx.beginPath();
             ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI);
             ctx.fill();
+            ctx.shadowBlur = 0; // reset shadow
 
             ctx.fillStyle = '#0d1117';
             ctx.beginPath();
             ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
             ctx.fill();
 
-            // Valor numérico en el centro
-            ctx.fillStyle = '#f0f6fc';
-            ctx.font = 'bold 32px Segoe UI';
+            // Valor numérico en el centro (FUERTE - blanco brillante)
+            ctx.shadowColor = 'rgba(88, 166, 255, 0.5)';
+            ctx.shadowBlur = 10;
+            ctx.fillStyle = 'rgba(240, 246, 252, 0.75)';
+            ctx.font = 'bold 36px Segoe UI';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(Math.round(currentSpeed).toString(), centerX, centerY + 50);
+            ctx.shadowBlur = 0; // reset shadow
 
-            // Unidad
-            ctx.fillStyle = '#8b949e';
+            // Unidad (semi-transparente)
+            ctx.fillStyle = 'rgba(139, 148, 158, 0.4)';
             ctx.font = '14px Segoe UI';
             ctx.fillText('km/h', centerX, centerY + 75);
         }
@@ -2599,7 +2672,7 @@
         const settingsMenu = document.getElementById('settingsMenu');
         if (settingsMenu) {
             const accelCheckbox = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
-                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'aceleración');
+                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'Aceleración');
 
             if (accelCheckbox) {
                 accelCheckbox.addEventListener('change', function() {
@@ -2645,7 +2718,7 @@
         
         if (settingsMenu) {
             const appsCheck = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
-                .find(cb => cb.name === 'appCheck' && cb.closest('.dropdown-item')?.textContent.includes('mesero'));
+                .find(cb => cb.name === 'appCheck' && cb.closest('.dropdown-item')?.textContent.includes('Mesero Robot'));
             
             if (appsCheck) {
                 appsCheck.addEventListener('change', function() {
