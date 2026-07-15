@@ -1923,7 +1923,7 @@
                     nameEl.innerHTML = iconHTML + ' ' + newName;
                     // Guardar en dataset para layouts
                     tile.dataset.customName = newName;
-                    showToast('✏️ ' + tile.dataset.camId + ' → ' + newName);
+                    showToast(tile.dataset.camId + ' → ' + newName);
                 }
 
                 input.addEventListener('blur', save);
@@ -2017,7 +2017,7 @@
                 grid.insertBefore(draggedEl, target);
             }
             recalcLayout();
-            showToast(`📹 ${draggedId} movida`);
+            showToast(`${draggedId} movida`);
         });
 
         // ============================================================
@@ -2051,7 +2051,7 @@
 
         document.addEventListener('mouseup', function() {
             if (resizeData) {
-                showToast(`📐 ${resizeData.camId} redimensionada`);
+                showToast(`${resizeData.camId} redimensionada`);
                 resizeData = null;
             }
         });
@@ -2211,13 +2211,13 @@
                 if (tile) {
                     if (cb.checked) {
                         tile.classList.remove('hidden');
-                        showToast('📷 ' + camName + ' visible');
+                        showToast(camName + ' visible');
                     } else {
                         tile.classList.add('hidden');
                         // Limpiar tamaño personalizado al ocultar
                         delete tile.dataset.customWidth;
                         delete tile.dataset.customHeight;
-                        showToast('🙈 ' + camName + ' oculta');
+                        showToast(camName + ' oculta');
                     }
                     recalcLayout();
                 }
@@ -2319,18 +2319,18 @@
                 
                 if (this.value === 'teclado' && this.checked) {
                     wasdKeys.style.display = 'block';
-                    showToast('⌨️ Control por teclado activado');
+                    showToast('Control por teclado activado');
                 } else if (this.value === 'volante' && this.checked) {
                     steeringWheel.style.display = 'block';
                     steeringAngle = 0;
                     steeringTarget = 0;
                     drawSteeringWheel(0);
                     steeringInterval = setInterval(simulateSteering, 50);
-                    showToast('🎮 Control por volante activado');
+                    showToast('Control por volante activado');
                 } else if (this.value === 'mando' && this.checked) {
                     gamepadControl.style.display = 'block';
                     drawGamepad();
-                    showToast('🕹️ Control por mando activado');
+                    showToast('Control por mando activado');
                 }
             });
         });
@@ -2788,7 +2788,7 @@
                     const data = loadLayouts();
                     if (data[name]) applyState(data[name]);
                     renderLayoutList();
-                    showToast('📐 Layout "' + name + '" aplicado');
+                    showToast('Layout "' + name + '" aplicado');
                 });
 
                 div.querySelector('.layout-del').addEventListener('click', (e) => {
@@ -2799,7 +2799,7 @@
                         saveLayouts(data);
                         if (activeLayoutName === name) activeLayoutName = null;
                         renderLayoutList();
-                        showToast('🗑 Layout eliminado');
+                        showToast('Layout eliminado');
                     }
                 });
 
@@ -2818,7 +2818,7 @@
             data[activeLayoutName] = captureState();
             saveLayouts(data);
             renderLayoutList();
-            showToast('💾 Layout "' + activeLayoutName + '" guardado');
+            showToast('Layout "' + activeLayoutName + '" guardado');
         }
 
         // Crear nuevo layout
@@ -2830,7 +2830,7 @@
             data[activeLayoutName] = captureState();
             saveLayouts(data);
             renderLayoutList();
-            showToast('➕ Layout "' + activeLayoutName + '" creado');
+            showToast('Layout "' + activeLayoutName + '" creado');
         }
 
         // Handlers de los botones de layout (save / create)
@@ -3324,11 +3324,11 @@
                         targetSpeed = 0;
                         accelData = [0];
                         accelInterval = setInterval(simulateAccel, 50);
-                        showToast('🚗 Velocímetro activado');
+                        showToast('Velocímetro activado');
                     } else {
                         accelGraph.style.display = 'none';
                         if (accelInterval) clearInterval(accelInterval);
-                        showToast('🚗 Velocímetro desactivado');
+                        showToast('Velocímetro desactivado');
                     }
                 });
                 // Si ya está checked al cargar la página → iniciar
@@ -3351,11 +3351,11 @@
                         packetLossGraph.style.display = 'block';
                         packetLossData = [];
                         packetLossInterval = setInterval(simulatePacketLoss, 100);
-                        showToast('📊 Packet loss activado');
+                        showToast('Packet loss activado');
                     } else {
                         packetLossGraph.style.display = 'none';
                         if (packetLossInterval) clearInterval(packetLossInterval);
-                        showToast('📊 Packet loss desactivado');
+                        showToast('Packet loss desactivado');
                     }
                 });
                 // Si ya está checked al cargar la página → iniciar
@@ -3377,11 +3377,11 @@
                         lidarSweepAngle = -Math.PI / 2;
                         lidarObstacles = [];
                         lidarInterval = setInterval(simulateLidar, 50);
-                        showToast('📡 LiDAR activado');
+                        showToast('LiDAR activado');
                     } else {
                         lidarGraph.style.display = 'none';
                         if (lidarInterval) clearInterval(lidarInterval);
-                        showToast('📡 LiDAR desactivado');
+                        showToast('LiDAR desactivado');
                     }
                 });
                 // Si ya está checked al cargar la página → iniciar
@@ -3407,10 +3407,10 @@
                 appsCheck.addEventListener('change', function() {
                     if (this.checked) {
                         appSidebar.classList.add('open');
-                        showToast('📱 Mesero abierto');
+                        showToast('Mesero abierto');
                     } else {
                         appSidebar.classList.remove('open');
-                        showToast('📱 Mesero cerrado');
+                        showToast('Mesero cerrado');
                     }
                     // Recalcular layout de cámaras porque cambió el ancho disponible
                     setTimeout(recalcLayout, 350); // esperar la transición
@@ -3530,7 +3530,7 @@
                 ctx.restore();
             }
         }
-
+        
         function drawKeyboardImage(ctx, w, h, hl) {
             ctx.fillStyle='#1a1a1a'; ctx.fillRect(0,0,w,h);
             function key(x,y,ww,hh,label,actionId){
@@ -3551,7 +3551,7 @@
             key(260,30,32,32,'H','horn');
             key(298,30,32,32,'L','light');
             ctx.fillStyle='#8b949e'; ctx.font='9px Segoe UI'; ctx.textAlign='center';
-            ctx.fillText('⌨️ Teclado',w/2,h-8);
+            ctx.fillText('Teclado',w/2,h-8);
         }
 
         function drawWheelImage(ctx, w, h, hl) {
@@ -3582,7 +3582,7 @@
             ctx.fillStyle='#555'; ctx.fillRect(10,60,12,25); ctx.fillRect(318,60,12,25);
             if(hl==='left') highlightBtn(ctx,{x:10,y:60,w:12,h:25},true);
             if(hl==='right') highlightBtn(ctx,{x:318,y:60,w:12,h:25},true);
-            ctx.fillStyle='#8b949e'; ctx.font='9px'; ctx.textAlign='center'; ctx.fillText('🎮 Volante Thrustmaster',w/2,h-8);
+            ctx.fillStyle='#8b949e'; ctx.font='9px'; ctx.textAlign='center'; ctx.fillText('Volante Thrustmaster',w/2,h-8);
         }
 
         function drawGamepadImage(ctx, w, h, hl) {
@@ -3611,7 +3611,7 @@
             if(hl==='backward') highlightBtn(ctx,{x:55,y:28,w:30,h:8},true);
             if(hl==='forward') highlightBtn(ctx,{x:195,y:28,w:30,h:8},true);
             ctx.fillStyle='#8b949e'; ctx.font='9px'; ctx.textAlign='center'; ctx.fillText('LT',70,22); ctx.fillText('RT',210,22);
-            ctx.fillText('🕹️ Mando',w/2,h-8);
+            ctx.fillText('Mando',w/2,h-8);
         }
 
         // ─── Actualizar highlight cuando se edita una tecla ───
@@ -3674,7 +3674,7 @@
             }
         }
         
-        setTimeout(() => showToast('🖱️ Arrastra cámaras · bordes para redimensionar'), 500);
+        setTimeout(() => showToast('Arrastra cámaras · bordes para redimensionar'), 500);
     })();
 </script>
 
@@ -3683,15 +3683,15 @@
 // ─── Conexión ───
 function testConnectionSB() {
     const url = document.getElementById('sbBaseUrl').value.trim();
-    if (!url) return logSB('⚠️ Ingresa una URL', 'err');
-    logSB('🔌 Probando conexión a ' + url + '...', 'info');
+    if (!url) return logSB('Ingresa una URL', 'err');
+    logSB('Probando conexión a ' + url + '...', 'info');
     updateConnStatusSB('connecting');
     
     fetch(url + '/ping', { method: 'GET', mode: 'cors' })
         .then(r => {
             if (r.ok) {
                 updateConnStatusSB('online');
-                logSB('✅ Conexión exitosa', 'ok');
+                logSB('Conexión exitosa', 'ok');
             } else {
                 throw new Error('Status ' + r.status);
             }
@@ -3702,14 +3702,14 @@ function testConnectionSB() {
                 .then(r => {
                     if (r.ok) {
                         updateConnStatusSB('online');
-                        logSB('✅ Conexión exitosa (health)', 'ok');
+                        logSB('Conexión exitosa (health)', 'ok');
                     } else {
                         throw new Error('Status ' + r.status);
                     }
                 })
                 .catch(() => {
                     updateConnStatusSB('offline');
-                    logSB('❌ No se pudo conectar a ' + url, 'err');
+                    logSB('No se pudo conectar a ' + url, 'err');
                 });
         });
 }
@@ -3732,7 +3732,7 @@ function updateConnStatusSB(status) {
 // ─── Llamadas al API ───
 function callEndpointSB(method, path) {
     const url = document.getElementById('sbBaseUrl').value.trim();
-    if (!url) return logSB('⚠️ Configura la URL primero', 'err');
+    if (!url) return logSB('Configura la URL primero', 'err');
     const fullUrl = url + path;
     logSB(method + ' ' + path, 'info');
     
@@ -3740,12 +3740,12 @@ function callEndpointSB(method, path) {
         .then(async r => {
             const txt = await r.text();
             if (r.ok) {
-                logSB('✅ ' + (txt || 'OK'), 'ok');
+                logSB((txt || 'OK'), 'ok');
             } else {
-                logSB('❌ ' + r.status + ' ' + txt, 'err');
+                logSB(r.status + ' ' + txt, 'err');
             }
         })
-        .catch(err => logSB('❌ Error: ' + err.message, 'err'));
+        .catch(err => logSB('Error: ' + err.message, 'err'));
 }
 
 // ─── Audio personalizado ───
@@ -3755,29 +3755,29 @@ function playCustomAudioSB() {
     const volume = document.getElementById('sbCustomVolume').value;
     const force = document.getElementById('sbCustomForce').checked;
     
-    if (!url) return logSB('⚠️ Configura la URL primero', 'err');
-    if (!asset) return logSB('⚠️ Ingresa ruta del audio', 'err');
+    if (!url) return logSB('Configura la URL primero', 'err');
+    if (!asset) return logSB('Ingresa ruta del audio', 'err');
     
     const params = new URLSearchParams();
     if (volume) params.set('volume', volume);
     if (force) params.set('force', 'true');
     
     const fullUrl = url + '/audio/play/' + asset + (params.toString() ? '?' + params : '');
-    logSB('▶️ Reproduciendo: ' + asset, 'info');
+    logSB('Reproduciendo: ' + asset, 'info');
     
     fetch(fullUrl, { method: 'POST', mode: 'cors' })
         .then(async r => {
             const txt = await r.text();
-            if (r.ok) logSB('✅ Audio OK', 'ok');
+            if (r.ok) logSB('Audio OK', 'ok');
             else logSB('❌ ' + r.status + ' ' + txt, 'err');
         })
-        .catch(err => logSB('❌ Error: ' + err.message, 'err'));
+        .catch(err => logSB('Error: ' + err.message, 'err'));
 }
 
 // ─── Configuración ───
 function updateConfigSB() {
     const url = document.getElementById('sbBaseUrl').value.trim();
-    if (!url) return logSB('⚠️ Configura la URL primero', 'err');
+    if (!url) return logSB('Configura la URL primero', 'err');
     
     const body = {};
     const cfgUrl = document.getElementById('sbCfgBaseUrl').value.trim();
@@ -3790,9 +3790,9 @@ function updateConfigSB() {
     if (merchant) body.merchant_id = parseInt(merchant);
     if (product) body.product_id = parseInt(product);
     
-    if (!Object.keys(body).length) return logSB('⚠️ Sin cambios para guardar', 'err');
+    if (!Object.keys(body).length) return logSB('Sin cambios para guardar', 'err');
     
-    logSB('💾 Guardando configuración...', 'info');
+    logSB('Guardando configuración...', 'info');
     
     fetch(url + '/config', {
         method: 'PUT',
@@ -3802,10 +3802,10 @@ function updateConfigSB() {
     })
         .then(async r => {
             const txt = await r.text();
-            if (r.ok) logSB('✅ Configuración guardada', 'ok');
+            if (r.ok) logSB('Configuración guardada', 'ok');
             else logSB('❌ ' + r.status + ' ' + txt, 'err');
         })
-        .catch(err => logSB('❌ Error: ' + err.message, 'err'));
+        .catch(err => logSB('Error: ' + err.message, 'err'));
 }
 
 // ─── Logger ───
