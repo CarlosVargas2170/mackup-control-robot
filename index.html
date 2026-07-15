@@ -63,6 +63,638 @@
             flex-direction: column;
         }
 
+        /* ═══════ DRIVING PANEL (RD2 Teleop) ═══════ */
+        .driving-panel {
+            width: 0;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(180deg, rgba(15, 22, 36, 0.97) 0%, rgba(10, 14, 20, 0.97) 100%);
+            border-left: 1px solid rgba(88, 166, 255, 0.25);
+            box-shadow: -8px 0 24px rgba(0, 0, 0, 0.4);
+            transition: width 0.3s ease;
+            color: #c9d1d9;
+            flex-shrink: 0;
+        }
+        .driving-panel.open { width: 480px; }
+
+        .dp-inner {
+            width: 480px;
+            height: 100%;
+            overflow-y: auto;
+            padding: 18px 18px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .dp-header {
+            border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+            padding-bottom: 12px;
+        }
+        .dp-title-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        .dp-eyebrow {
+            display: block;
+            color: rgba(139, 148, 158, 0.8);
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .dp-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            color: #ffffff;
+        }
+        .dp-accent { color: #58a6ff; }
+        .dp-close {
+            background: transparent;
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            color: #c9d1d9;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .dp-close:hover { background: rgba(218, 54, 51, 0.2); border-color: rgba(255, 80, 80, 0.6); color: #ff5050; }
+
+        .dp-header-actions {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .dp-popout {
+            background: transparent;
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            color: #c9d1d9;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .dp-popout:hover { background: rgba(88, 166, 255, 0.15); border-color: rgba(88, 166, 255, 0.6); color: #58a6ff; }
+
+        /* Status indicators */
+        .dp-status {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .dp-status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(48, 54, 61, 0.25);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            border-radius: 8px;
+            font-size: 12px;
+            flex: 1;
+            min-width: 130px;
+        }
+        .dp-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dot-on { background: #3fb950; box-shadow: 0 0 6px rgba(63, 185, 80, 0.6); }
+        .dot-off { background: #6e7681; }
+        .dp-status-label { color: rgba(139, 148, 158, 0.8); font-weight: 500; }
+        .dp-status-value { color: #ffffff; font-weight: 600; margin-left: auto; }
+
+        /* Sections */
+        .dp-section {
+            background: rgba(22, 27, 34, 0.55);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+        .dp-section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .dp-section h2 {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0 0 8px;
+            color: #ffffff;
+        }
+        .dp-section-head h2 { margin: 0; }
+        .dp-pct { color: #d29922; font-size: 16px; font-weight: 700; margin-left: 6px; }
+        .dp-badge {
+            background: rgba(63, 185, 80, 0.15);
+            color: #3fb950;
+            border: 1px solid rgba(63, 185, 80, 0.3);
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* Mode toggle */
+        .dp-mode-toggle {
+            display: flex;
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+        .dp-mode-btn {
+            background: transparent;
+            border: none;
+            color: rgba(139, 148, 158, 0.7);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dp-mode-btn.active {
+            background: rgba(88, 166, 255, 0.2);
+            color: #58a6ff;
+        }
+        .dp-mode-btn:hover:not(.active) { color: #c9d1d9; }
+
+        /* Controls */
+        .dp-control {
+            margin-bottom: 12px;
+        }
+        .dp-control:last-child { margin-bottom: 0; }
+        .dp-control-label {
+            display: block;
+            color: rgba(139, 148, 158, 0.8);
+            font-size: 11px;
+            font-weight: 500;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        .dp-control-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+        .dp-control-head label {
+            color: rgba(139, 148, 158, 0.8);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .dp-value {
+            color: #58a6ff;
+            font-size: 14px;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Sliders */
+        .dp-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(48, 54, 61, 0.5);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+        .dp-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #58a6ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 6px rgba(88, 166, 255, 0.5);
+            transition: transform 0.1s;
+        }
+        .dp-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        .dp-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #58a6ff;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 6px rgba(88, 166, 255, 0.5);
+        }
+        .dp-slider-dir {
+            background: linear-gradient(to right, #58a6ff 0%, #58a6ff 50%, #30363d 50%, #30363d 100%);
+        }
+
+        .dp-range-labels {
+            display: flex;
+            justify-content: space-between;
+            color: rgba(139, 148, 158, 0.5);
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        /* Throttle row */
+        .dp-throttle-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Progress bars */
+        .dp-progress {
+            width: 100%;
+            height: 8px;
+            background: rgba(48, 54, 61, 0.5);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .dp-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.2s;
+        }
+        .fill-blue { background: linear-gradient(90deg, #1f6feb, #58a6ff); box-shadow: 0 0 8px rgba(88, 166, 255, 0.4); }
+        .fill-red { background: linear-gradient(90deg, #da3633, #ff5050); box-shadow: 0 0 8px rgba(255, 80, 80, 0.4); }
+        .dp-progress-label {
+            color: rgba(139, 148, 158, 0.6);
+            font-size: 10px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Gear buttons */
+        .dp-gear-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 6px;
+        }
+        .dp-gear-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 8px;
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            color: #c9d1d9;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dp-gear-btn:hover { border-color: rgba(88, 166, 255, 0.4); color: #ffffff; }
+        .dp-gear-btn.active {
+            background: rgba(88, 166, 255, 0.15);
+            border-color: rgba(88, 166, 255, 0.6);
+            color: #58a6ff;
+        }
+        .dp-key {
+            display: inline-block;
+            background: rgba(48, 54, 61, 0.6);
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            border: 1px solid rgba(139, 148, 158, 0.3);
+            min-width: 24px;
+            text-align: center;
+        }
+
+        /* Notes */
+        .dp-note {
+            color: rgba(139, 148, 158, 0.7);
+            font-size: 11px;
+            margin: 6px 0 0;
+            line-height: 1.4;
+        }
+        .dp-note-warn { color: #d29922; font-weight: 500; }
+        .dp-note-state {
+            color: rgba(139, 148, 158, 0.6);
+            font-family: monospace;
+            font-size: 10px;
+        }
+
+        /* Aux buttons grid */
+        .dp-aux-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 8px 0;
+        }
+        .dp-aux-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 12px;
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            color: #c9d1d9;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: left;
+        }
+        .dp-aux-btn small {
+            display: block;
+            color: rgba(139, 148, 158, 0.6);
+            font-size: 9px;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        .dp-aux-btn:hover { border-color: rgba(88, 166, 255, 0.4); }
+        .dp-aux-btn.active {
+            background: rgba(88, 166, 255, 0.2);
+            border-color: rgba(88, 166, 255, 0.6);
+            color: #58a6ff;
+        }
+        .dp-aux-btn.pressed {
+            background: rgba(210, 153, 34, 0.25);
+            border-color: rgba(210, 153, 34, 0.6);
+            color: #d29922;
+        }
+        .dp-aux-wide {
+            width: 100%;
+            margin-top: 8px;
+            justify-content: flex-start;
+        }
+
+        /* Select */
+        .dp-select {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            border-radius: 8px;
+            color: #c9d1d9;
+            font-size: 13px;
+            cursor: pointer;
+            margin-bottom: 6px;
+        }
+        .dp-select:focus { outline: none; border-color: rgba(88, 166, 255, 0.6); }
+
+        /* Footer */
+        .dp-footer {
+            color: rgba(139, 148, 158, 0.5);
+            font-size: 10px;
+            text-align: center;
+            padding-top: 8px;
+            border-top: 1px solid rgba(48, 54, 61, 0.3);
+        }
+
+        /* ═══════ Mando USB / STM32 Estado ═══════ */
+
+        /* Botón Desactivar / power */
+        .dp-btn-cyan {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            border: 1px solid rgba(88, 166, 255, 0.4);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .dp-btn-cyan:hover { background: rgba(88, 166, 255, 0.25); }
+        .dp-btn-cyan.off {
+            background: rgba(48, 54, 61, 0.5);
+            color: #c9d1d9;
+            border-color: rgba(48, 54, 61, 0.6);
+        }
+        .dp-btn-power {
+            background: transparent;
+            border: 1px solid rgba(48, 54, 61, 0.5);
+            color: #3fb950;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .dp-btn-power:hover { background: rgba(63, 185, 80, 0.15); }
+        .dp-btn-power.off { color: #6e7681; border-color: rgba(110, 118, 129, 0.5); }
+
+        /* Device box */
+        .dp-device-box {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin: 8px 0;
+        }
+        .dp-device-name {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .dp-axis-block {
+            display: flex;
+            gap: 8px;
+            margin: 4px 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            flex-wrap: wrap;
+        }
+        .dp-axis-label {
+            color: rgba(139, 148, 158, 0.6);
+            font-weight: 600;
+            min-width: 60px;
+        }
+        .dp-axis-val {
+            color: #c9d1d9;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        /* Collapse toggle */
+        .dp-collapse-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: rgba(139, 148, 158, 0.8);
+            font-size: 12px;
+            padding: 6px 0;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .dp-collapse-toggle:hover { color: #58a6ff; }
+        .dp-collapse-arrow {
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+        .dp-collapse-toggle.open .dp-collapse-arrow { transform: rotate(90deg); }
+        .dp-collapse-content {
+            display: none;
+            padding-top: 8px;
+            border-top: 1px solid rgba(48, 54, 61, 0.3);
+            margin-top: 6px;
+        }
+        .dp-collapse-content.open { display: block; }
+
+        /* Status table (STM32) */
+        .dp-status-table {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            border-radius: 8px;
+            padding: 4px 0;
+            margin: 8px 0;
+        }
+        .dp-status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(48, 54, 61, 0.25);
+        }
+        .dp-status-row:last-child { border-bottom: none; }
+        .dp-row-label {
+            color: rgba(139, 148, 158, 0.7);
+            font-size: 12px;
+        }
+        .dp-row-value {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .dp-row-label-only { justify-content: flex-start; }
+        .dp-row-label-only .dp-row-label { color: rgba(139, 148, 158, 0.9); }
+
+        /* TX/RX box */
+        .dp-txrx-box {
+            background: rgba(13, 17, 23, 0.6);
+            border: 1px solid rgba(48, 54, 61, 0.4);
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin: 8px 0;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+        .dp-txrx-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 4px 0;
+            font-size: 11px;
+        }
+        .dp-txrx-row + .dp-txrx-row { border-top: 1px solid rgba(48, 54, 61, 0.2); margin-top: 4px; padding-top: 6px; }
+        .dp-txrx-tag {
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
+        }
+        .tag-tx { background: rgba(210, 153, 34, 0.2); color: #d29922; }
+        .tag-rx { background: rgba(63, 185, 80, 0.2); color: #3fb950; }
+        .dp-txrx-content {
+            color: #c9d1d9;
+            word-break: break-all;
+            flex: 1;
+        }
+
+        /* Warning */
+        .dp-warning {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            background: rgba(210, 153, 34, 0.12);
+            border: 1px solid rgba(210, 153, 34, 0.35);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin: 8px 0;
+            color: #d29922;
+        }
+        .dp-warning i { font-size: 18px; margin-top: 2px; }
+        .dp-warning strong { display: block; font-size: 12px; }
+        .dp-warning small { display: block; color: rgba(210, 153, 34, 0.85); font-size: 11px; margin-top: 2px; }
+
+        /* Emergency button */
+        .dp-emergency-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #b62324 0%, #d23f4a 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 80, 80, 0.5);
+            border-radius: 10px;
+            padding: 12px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(218, 54, 51, 0.3);
+            transition: all 0.15s;
+            margin: 8px 0;
+        }
+        .dp-emergency-btn strong { display: block; font-size: 14px; letter-spacing: 1px; font-weight: 700; }
+        .dp-emergency-btn span { display: block; font-size: 11px; opacity: 0.9; margin-top: 2px; }
+        .dp-emergency-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(218, 54, 51, 0.4); }
+        .dp-emergency-btn:active { transform: translateY(0); }
+        .dp-emergency-btn.triggered {
+            background: linear-gradient(135deg, #6e7681 0%, #8b949e 100%);
+            border-color: rgba(139, 148, 158, 0.5);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Status footer */
+        .dp-status-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 10px;
+            color: rgba(139, 148, 158, 0.7);
+        }
+        .dp-status-footer-item { display: flex; align-items: center; gap: 4px; }
+        .dp-pulse {
+            color: #3fb950;
+            animation: dp-pulse-anim 2s ease-in-out infinite;
+        }
+        @keyframes dp-pulse-anim {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .dp-freq-stat {
+            text-align: center;
+            color: rgba(139, 148, 158, 0.5);
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
         /* ─── Sidebar: Header ─── */
         .sb-header {
             padding: 12px 14px 8px;
@@ -1091,6 +1723,33 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
+        .radar-front-graph {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 12px;
+            padding: 10px;
+            z-index: 800;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .lidar-fusion-graph {
+            position: fixed;
+            top: 540px;
+            left: 20px;
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 12px;
+            padding: 10px;
+            z-index: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
         .graph-title {
             color: #58a6ff;
             font-size: 14px;
@@ -1115,6 +1774,18 @@
             display: block;
             border-radius: 8px;
             background: radial-gradient(circle at 50% 50%, rgba(28, 35, 51, 0.4), rgba(13, 17, 23, 0.6));
+        }
+
+        .radar-front-graph canvas {
+            display: block;
+            border-radius: 8px;
+            background: radial-gradient(circle at 50% 60%, rgba(28, 35, 51, 0.4), rgba(13, 17, 23, 0.6));
+        }
+
+        .lidar-fusion-graph canvas {
+            display: block;
+            border-radius: 8px;
+            background: radial-gradient(circle at 50% 60%, rgba(28, 35, 51, 0.4), rgba(13, 17, 23, 0.6));
         }
 
         /* ---- GRAPH DRAG & RESIZE HANDLES ---- */
@@ -1298,6 +1969,91 @@
             opacity: 0.6;
         }
 
+        /* ── handbrakeOverlay (Freno de mano) ── */
+        .handbrake-overlay {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            padding: 0;
+            z-index: 900;
+            box-shadow: none;
+            cursor: default;
+        }
+        .hb-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(218, 54, 51, 0.3);
+            border-radius: 12px;
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            color: #aaa;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            cursor: pointer;
+            text-align: center;
+            line-height: 1.3;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            user-select: none;
+            outline: none;
+        }
+        .hb-btn:hover {
+            border-color: rgba(218, 54, 51, 0.6);
+            color: #ff6666;
+            box-shadow: 0 0 16px rgba(218, 54, 51, 0.25), 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        .handbrake-overlay.active-overlay .hb-btn {
+            background: linear-gradient(135deg, #b62324 0%, #d23f4a 100%);
+            border-color: rgba(255, 60, 60, 0.8);
+            color: #fff;
+            font-size: 18px;
+            box-shadow: 0 0 20px rgba(218, 54, 51, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3);
+            animation: hbBtnPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes hbBtnPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(218, 54, 51, 0.5), 0 4px 16px rgba(0, 0, 0, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 60, 60, 0.75), 0 4px 16px rgba(0, 0, 0, 0.3); }
+        }
+
+        /* ── gpsGraph (GPS / Navegación) ── */
+        .gps-graph {
+            position: fixed;
+            top: 250px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 20, 0.35);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(48, 54, 61, 0.25);
+            border-radius: 12px;
+            padding: 10px;
+            z-index: 500;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+        .gps-graph canvas {
+            display: block;
+            border-radius: 8px;
+            background: rgba(13, 17, 23, 0.5);
+        }
+
+        /* ── Modo edición (overlays bloqueados por defecto) ── */
+        body:not(.edit-mode) .graph-draggable { cursor: default !important; }
+        body:not(.edit-mode) .graph-draggable:hover { box-shadow: none !important; }
+        body:not(.edit-mode) .graph-drag-handle,
+        body:not(.edit-mode) .graph-resize { display: none !important; }
+        body:not(.edit-mode) .resize-handle,
+        body:not(.edit-mode) .drag-handle { display: none !important; }
+        body:not(.edit-mode) .cam-tile { cursor: default !important; }
+        body.edit-mode .graph-draggable { cursor: grab; }
+        body.edit-mode .graph-draggable:active { cursor: grabbing; }
+        #editModeToggle.active { color: #58a6ff; background: rgba(88, 166, 255, 0.15); }
+
         /* ---- RESPONSIVE ---- */
         @media (max-width: 768px) {
             .fullscreen-container { padding: 6px; }
@@ -1354,7 +2110,7 @@
             <div class="resize-handle se" data-resize="se"></div>
             <div class="resize-handle s" data-resize="s"></div>
             <div class="resize-handle e" data-resize="e"></div>
-        </div>
+        </div>.
 
         <!-- Cámara 2 -->
         <div class="cam-tile" data-cam-id="cam2" style="width:calc(50% - 5px); height:48%;">
@@ -1494,6 +2250,24 @@
         <div class="graph-resize" data-resize="e"></div>
     </div>
 
+    <!-- GRÁFICO DE RADAR FRONTAL -->
+    <div class="radar-front-graph graph-draggable" id="radarFrontGraph" style="display: none; width:260px; height:260px;">
+        <canvas id="radarFrontCanvas" width="240" height="240"></canvas>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
+    </div>
+
+    <!-- GRÁFICO DE FUSIÓN LIDAR + RADAR FRONTAL -->
+    <div class="lidar-fusion-graph graph-draggable" id="lidarFusionGraph" style="display: none; width:320px; height:320px;">
+        <canvas id="lidarFusionCanvas" width="300" height="300"></canvas>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
+    </div>
+
     <!-- TECLAS WASD -->
     <div class="wasd-keys graph-draggable" id="wasdKeys" style="display: none; width:160px; height:120px;">
         <div class="wasd-row">
@@ -1522,6 +2296,24 @@
     <!-- CONTROL DE MANDO -->
     <div class="gamepad-control graph-draggable" id="gamepadControl" style="display: none; width:286px; height:196px;">
         <img src="assets/imgs/mando_ofi.png" alt="Mando PSP" class="gamepad-control-img">
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
+    </div>
+
+    <!-- FRENO DE MANO (Handbrake) -->
+    <div class="handbrake-overlay graph-draggable" id="handbrakeOverlay" style="display: none; width:220px; height:100px;">
+        <button class="hb-btn" id="handbrakeBtn">FRENO<br>DE MANO</button>
+        <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
+        <div class="graph-resize" data-resize="se"></div>
+        <div class="graph-resize" data-resize="s"></div>
+        <div class="graph-resize" data-resize="e"></div>
+    </div>
+
+    <!-- GRÁFICO GPS -->
+    <div class="gps-graph graph-draggable" id="gpsGraph" style="display: none; width:300px; height:250px;">
+        <canvas id="gpsCanvas" width="280" height="230"></canvas>
         <div class="graph-drag-handle"><i class="fas fa-grip-lines"></i></div>
         <div class="graph-resize" data-resize="se"></div>
         <div class="graph-resize" data-resize="s"></div>
@@ -1573,7 +2365,22 @@
                     <input type="checkbox"> <span class="label-text">Aceleración</span>
                 </label>
                 <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">GPS</span>
+                </label>
+                <label class="dropdown-item">
                     <input type="checkbox"> <span class="label-text">LiDAR</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">Radar frontal</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">Fusión LIDAR+Radar</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox"> <span class="label-text">Freno de mano</span>
+                </label>
+                <label class="dropdown-item">
+                    <input type="checkbox" id="chkDrivingPanel"> <span class="label-text">Panel de conducción</span>
                 </label>
                 <div class="dropdown-item has-submenu">
                     <div class="submenu-trigger">
@@ -1611,10 +2418,15 @@
             </div>
         </div>
         <div class="btn-divider"></div>
+        <button class="btn-icon" id="editModeToggle" title="Activar modo edición">
+            <i class="fas fa-lock"></i>
+            <span class="tooltip">Edición</span>
+        </button>
+        <div class="btn-divider"></div>
         <div class="dropdown-wrapper">
             <button class="btn-icon" id="layoutsToggle" title="Layouts guardados">
-                <i class="fas fa-object-group"></i>
-                <span class="tooltip">Layouts</span>
+                <i class="fas fa-edit"></i>
+                <span class="tooltip">Edición</span>
             </button>
             <div class="dropdown-menu" id="layoutsDropdown">
                 <div id="layoutsList">
@@ -1634,7 +2446,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
     <!-- SIDEBAR DE APPS -->
@@ -1791,6 +2602,271 @@
 
         </div>
     </div>
+
+<!-- ═══ PANEL DE CONDUCCIÓN (RD2 Teleop) ═══ -->
+<div class="driving-panel" id="drivingPanel">
+    <div class="dp-inner">
+
+        <!-- Header -->
+        <div class="dp-header">
+            <span class="dp-eyebrow">SISTEMA DE CONDUCCIÓN</span>
+            <div class="dp-title-row">
+                <h1>RD2 <span class="dp-accent">Teleop</span></h1>
+                <div class="dp-header-actions">
+                    <button class="dp-popout" id="dpPopoutBtn" onclick="popoutDrivingPanel()" title="Abrir en ventana independiente">
+                        <i class="fas fa-external-link-alt"></i>
+                    </button>
+                    <button class="dp-close" onclick="closeDrivingPanel()" title="Cerrar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indicadores de estado -->
+        <div class="dp-status">
+            <div class="dp-status-item" id="dpStatusMando">
+                <span class="dp-status-dot dot-off"></span>
+                <span class="dp-status-label">Mando</span>
+                <span class="dp-status-value">Sin mando</span>
+            </div>
+            <div class="dp-status-item" id="dpStatusSTM">
+                <span class="dp-status-dot dot-on"></span>
+                <span class="dp-status-label">STM32</span>
+                <span class="dp-status-value">Conectada</span>
+            </div>
+            <div class="dp-status-item" id="dpStatusCanal">
+                <span class="dp-status-dot dot-on"></span>
+                <span class="dp-status-label">Canal</span>
+                <span class="dp-status-value">Active</span>
+            </div>
+        </div>
+
+        <!-- CONTROL EN VIVO -->
+        <div class="dp-section">
+            <div class="dp-section-head">
+                <div>
+                    <span class="dp-eyebrow">CONTROL EN VIVO</span>
+                    <h2>Conducción</h2>
+                </div>
+                <div class="dp-mode-toggle">
+                    <button class="dp-mode-btn active" id="dpBtnRC" onclick="setDrivingMode('RC')">RC</button>
+                    <button class="dp-mode-btn" id="dpBtnTELEOP" onclick="setDrivingMode('TELEOP')">TELEOP</button>
+                </div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="dp-control">
+                <div class="dp-control-head">
+                    <label>Dirección</label>
+                    <span class="dp-value" id="dpDirValue">0</span>
+                </div>
+                <input type="range" min="-1000" max="1000" value="0" class="dp-slider dp-slider-dir" id="dpDirSlider" oninput="updateDrivingValue('dir', this.value)">
+                <div class="dp-range-labels">
+                    <span>-1000</span>
+                    <span>1000</span>
+                </div>
+            </div>
+
+            <!-- Acelerador y Freno -->
+            <div class="dp-throttle-row">
+                <div class="dp-control">
+                    <div class="dp-control-head">
+                        <label>Acelerador</label>
+                        <span class="dp-value" id="dpAcelValue">0%</span>
+                    </div>
+                    <div class="dp-progress"><div class="dp-progress-fill fill-blue" id="dpAcelFill" style="width:0%"></div></div>
+                    <span class="dp-progress-label" id="dpAcelLabel">0 / 1000</span>
+                </div>
+                <div class="dp-control">
+                    <div class="dp-control-head">
+                        <label>Freno</label>
+                        <span class="dp-value" id="dpBrakeValue">100%</span>
+                    </div>
+                    <div class="dp-progress"><div class="dp-progress-fill fill-red" id="dpBrakeFill" style="width:100%"></div></div>
+                    <span class="dp-progress-label" id="dpBrakeLabel">1000 / 1000</span>
+                </div>
+            </div>
+
+            <!-- Selector de marcha -->
+            <div class="dp-control">
+                <label class="dp-control-label">Selector de marcha</label>
+                <div class="dp-gear-buttons">
+                    <button class="dp-gear-btn" id="dpBtnRetro" onclick="setDrivingGear('retro')">
+                        <span class="dp-key">LB</span> Retro
+                    </button>
+                    <button class="dp-gear-btn active" id="dpBtnNeutral" onclick="setDrivingGear('neutral')">
+                        Neutral
+                    </button>
+                    <button class="dp-gear-btn" id="dpBtnAvance" onclick="setDrivingGear('avance')">
+                        <span class="dp-key">RB</span> Avance
+                    </button>
+                </div>
+                <p class="dp-note">Las marchas se enclavan en la STM32. LB = RD selecciona neutral.</p>
+            </div>
+        </div>
+
+        <!-- SEGURIDAD DE CONDUCCIÓN -->
+        <div class="dp-section">
+            <span class="dp-eyebrow">SEGURIDAD DE CONDUCCIÓN</span>
+            <h2>Velocidad máxima <span class="dp-pct" id="dpMaxPct">5%</span></h2>
+            <input type="range" min="0" max="100" value="5" class="dp-slider dp-slider-max" id="dpMaxSlider" oninput="updateMaxSpeed(this.value)">
+            <p class="dp-note">Limita proporciones frente a la idea del acelerador</p>
+            <div class="dp-range-labels">
+                <span>0% detenido</span>
+                <span>100% máximo</span>
+            </div>
+        </div>
+
+        <!-- AUXILIARES STM32 -->
+        <div class="dp-section">
+            <span class="dp-eyebrow">AUXILIARES STM32</span>
+            <h2>Luces, guiñadores y puerta</h2>
+            <div class="dp-aux-grid">
+                <button class="dp-aux-btn" data-aux="luz-frontal" onclick="toggleAux(this)">
+                    <span class="dp-key">Start</span> Luz frontal
+                </button>
+                <button class="dp-aux-btn" data-aux="guinador-izq" onclick="toggleAux(this)">
+                    <span class="dp-key">Y</span> Guiñador izq.
+                </button>
+                <button class="dp-aux-btn" data-aux="guinador-der" onclick="toggleAux(this)">
+                    <span class="dp-key">B</span> Guiñador der.
+                </button>
+                <button class="dp-aux-btn" data-aux="balizas" onclick="toggleAux(this)">
+                    <span class="dp-key">Back</span> Balizas
+                </button>
+                <button class="dp-aux-btn" data-aux="destellador" onclick="toggleAux(this)">
+                    <span class="dp-key">R3</span> Destellador
+                </button>
+                <button class="dp-aux-btn" data-aux="abrir-puerta" onmousedown="pressAux(this)" onmouseup="releaseAux(this)" onmouseleave="releaseAux(this)">
+                    <span class="dp-key">A</span> Abrir puerta
+                    <!-- <small>Mantener presionado</small> -->
+                </button>
+                <button class="dp-aux-btn" data-aux="cerrar-puerta" onmousedown="pressAux(this)" onmouseup="releaseAux(this)" onmouseleave="releaseAux(this)">
+                    <span class="dp-key">X</span> Cerrar puerta
+                    <!-- <small>Mantener presionado</small> -->
+                </button>
+            </div>
+            <p class="dp-note dp-note-warn">Pruebas físicas restantes</p>
+            <p class="dp-note dp-note-state" id="dpAuxState">Luz: OFF · Destellador: OFF · Izq: OFF · Der: OFF · Balizas: OFF · Puerta: OFF</p>
+        </div>
+
+        <!-- AUDIO JETSON -->
+        <div class="dp-section">
+            <div class="dp-section-head">
+                <div>
+                    <span class="dp-eyebrow">AUDIO JETSON</span>
+                    <h2>Bocina <span class="dp-badge">Listo</span></h2>
+                </div>
+            </div>
+            <label class="dp-control-label">Sonido seleccionado</label>
+            <select class="dp-select" id="dpHornSound" onchange="updateHornSound(this.value)">
+                <option value="normal">Bocina normal</option>
+                <option value="suave">Bocina suave</option>
+                <option value="aguda">Bocina aguda</option>
+            </select>
+            <button class="dp-aux-btn dp-aux-wide" data-aux="bocina" onmousedown="pressAux(this)" onmouseup="releaseAux(this)" onmouseleave="releaseAux(this)">
+                <span class="dp-key">LS</span> Mantener bocina
+                <!-- <small>Mantener presionado</small> -->
+            </button>
+        </div>
+
+        <!-- Footer -->
+        <!-- MANDO USB (Laptop Remota) -->
+        <div class="dp-section">
+            <div class="dp-section-head">
+                <div>
+                    <!-- <span class="dp-eyebrow">LAPTOP REMOTA</span> -->
+                    <!-- <h2>Mando USB</h2> -->
+                </div>
+                <!-- <button class="dp-btn-cyan" id="dpBtnDesactivarMando" onclick="toggleMandoActivo()">Desactivar</button> -->
+            </div>
+            <p class="dp-note dp-note-state" id="dpMandoState">Mando activo. Mantén esta pestaña abierta y visible.</p>
+            <div class="dp-device-box">
+                <div class="dp-device-name" id="dpDeviceName">24c4-5b03-Thrustmaster Ferrari 458 Racing Wheel</div>
+                <div class="dp-axis-block">
+                    <span class="dp-axis-label">Ejes:</span>
+                    <span class="dp-axis-val" id="dpAxes">0:-0.02 · 1:+0.00 · 2:+0.00 · 3:-0.00 · 4:-0.00 · 5:-0.00 · 6:-0.00 · 7:-…</span>
+                </div>
+                <div class="dp-axis-block">
+                    <span class="dp-axis-label">Botones:</span>
+                    <span class="dp-axis-val" id="dpButtons">0:0.00 · 1:0.00 · 2:0.00 · 3:0.00</span>
+                </div>
+            </div>
+            <button class="dp-collapse-toggle" onclick="toggleDpCollapse('dpMandoConfig', this)">
+                <i class="fas fa-cog"></i> Configurar ejes y botones
+                <i class="fas fa-chevron-right dp-collapse-arrow"></i>
+            </button>
+            <div class="dp-collapse-content" id="dpMandoConfig">
+                <p class="dp-note">Configuración de calibración y mapeo de ejes/botones (próximamente).</p>
+            </div>
+        </div>
+
+        <!-- STM32 ESTADO -->
+        <div class="dp-section">
+            <div class="dp-section-head">
+                <div>
+                    <span class="dp-eyebrow">STM32</span>
+                    <h2>Estado</h2>
+                </div>
+                <button class="dp-btn-power" id="dpBtnPowerSTM" onclick="togglePowerSTM()" title="Apagar/Encender">
+                    <i class="fas fa-power-off"></i>
+                </button>
+            </div>
+
+            <div class="dp-status-table">
+                <div class="dp-status-row">
+                    <span class="dp-row-label">Marcha real</span>
+                    <span class="dp-row-value" id="dpMarchaReal">SAFE</span>
+                </div>
+                <div class="dp-status-row">
+                    <span class="dp-row-label">Modo</span>
+                    <span class="dp-row-value" id="dpModo">OFF</span>
+                </div>
+                <div class="dp-status-row">
+                    <span class="dp-row-label">Failsafe</span>
+                    <span class="dp-row-value" id="dpFailsafe">/dev/ttyACM0</span>
+                </div>
+                <div class="dp-status-row">
+                    <span class="dp-row-label">Puerto</span>
+                    <span class="dp-row-value" id="dpPuerto">Pa2 físico</span>
+                </div>
+                <div class="dp-status-row dp-row-label-only">
+                    <span class="dp-row-label">Selector RC/TELEOP</span>
+                </div>
+            </div>
+
+            <div class="dp-txrx-box">
+                <div class="dp-txrx-row">
+                    <span class="dp-txrx-tag tag-tx">ÚLTIMO TX</span>
+                    <code class="dp-txrx-content" id="dpUltimoTx">TELEOP 0 0 1000 0 0</code>
+                </div>
+                <div class="dp-txrx-row">
+                    <span class="dp-txrx-tag tag-rx">ÚLTIMO RX</span>
+                    <code class="dp-txrx-content" id="dpUltimoRx">OK TELEOP STANDBY MODE=RC</code>
+                </div>
+            </div>
+
+            <div class="dp-warning" id="dpWarningBlock" style="display:none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    <strong>Conducción bloqueada</strong>
+                    <small>Se perdió la conexión con el mando de la laptop</small>
+                </div>
+            </div>
+            <button class="dp-emergency-btn" id="dpBtnEmergency" onclick="triggerEmergencyStop()">
+                <strong>PARADA DE EMERGENCIA</strong>
+                <span>Neutral + Freno máximo</span>
+            </button>
+            <div class="dp-status-footer">
+                <span class="dp-status-footer-item"><i class="fas fa-circle dp-pulse"></i> Canal WebSocket</span>
+                <span class="dp-status-footer-item" id="dpTimestamp">—</span>
+            </div>
+            <div class="dp-freq-stat">Transmisión 25 Hz</div>
+        </div>
+        <div class="dp-footer">Control Remoto · RD2 Teleop</div>
+    </div>
+</div>
 
 </div>
 
@@ -1958,6 +3034,7 @@
         }, true);
 
         grid.addEventListener('dragstart', function(e) {
+            if (!editMode) { e.preventDefault(); return; }
             // Si el mousedown fue sobre un resize-handle → no drag
             if (dragDownTarget && dragDownTarget.closest('.resize-handle')) {
                 e.preventDefault();
@@ -2026,6 +3103,7 @@
         let resizeData = null;
 
         grid.addEventListener('mousedown', function(e) {
+            if (!editMode) return;
             const handle = e.target.closest('.resize-handle');
             if (!handle) return;
             e.preventDefault();
@@ -2061,6 +3139,7 @@
         // ============================================================
         let graphDragData = null;
         let graphResizeData = null;
+        let editMode = false;
 
         function initGraphDragResize() {
             document.querySelectorAll('.graph-draggable').forEach(container => {
@@ -2069,6 +3148,7 @@
                 const canvas = container.querySelector('canvas');
 
                 container.addEventListener('mousedown', function(e) {
+                    if (!editMode) return;
                     // ¿Resize handle? → prioridad máxima
                     const rh = e.target.closest('.graph-resize');
                     if (rh) {
@@ -2143,6 +3223,10 @@
                 else if (el.id === 'gamepadControl') drawGamepad();
                 else if (el.id === 'packetLossGraph') drawPacketLossGraph();
                 else if (el.id === 'lidarGraph') drawLidarGraph();
+                else if (el.id === 'radarFrontGraph') drawRadarFrontGraph();
+                else if (el.id === 'lidarFusionGraph') drawLidarFusionGraph();
+                else if (el.id === 'handbrakeOverlay') updateHandbrakeButton();
+                else if (el.id === 'gpsGraph') drawGpsGraph();
             }
         });
 
@@ -2272,6 +3356,29 @@
                 layoutsDropdown.classList.toggle('open');
                 this.style.transform = 'scale(0.92)';
                 setTimeout(() => { this.style.transform = ''; }, 150);
+            });
+        }
+
+        // Toggle modo edición (bloquear/desbloquear overlays)
+        const editModeToggle = document.getElementById('editModeToggle');
+        if (editModeToggle) {
+            editModeToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                e.preventDefault();
+                editMode = !editMode;
+                if (editMode) {
+                    document.body.classList.add('edit-mode');
+                    this.classList.add('active');
+                    this.querySelector('i').className = 'fas fa-lock-open';
+                    this.title = 'Desactivar modo edición';
+                    showToast('Modo edición: los gráficos se pueden mover y redimensionar');
+                } else {
+                    document.body.classList.remove('edit-mode');
+                    this.classList.remove('active');
+                    this.querySelector('i').className = 'fas fa-lock';
+                    this.title = 'Activar modo edición';
+                    showToast('Modo edición desactivado');
+                }
             });
         }
 
@@ -2630,7 +3737,7 @@
             }
             // Capturar posición, tamaño y visibilidad de todos los gráficos
             const graphElements = {};
-            const graphIds = ['accelGraph','packetLossGraph','lidarGraph','steeringWheel','gamepadControl','wasdKeys'];
+            const graphIds = ['accelGraph','packetLossGraph','lidarGraph','radarFrontGraph','lidarFusionGraph','steeringWheel','gamepadControl','wasdKeys','handbrakeOverlay','gpsGraph'];
             graphIds.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -2750,6 +3857,10 @@
                 else if (id === 'steeringWheel' && el.style.display !== 'none') drawSteeringWheel(0);
                 else if (id === 'gamepadControl' && el.style.display !== 'none') drawGamepad();
                 else if (id === 'lidarGraph' && el.style.display !== 'none') drawLidarGraph();
+                else if (id === 'radarFrontGraph' && el.style.display !== 'none') drawRadarFrontGraph();
+                else if (id === 'lidarFusionGraph' && el.style.display !== 'none') drawLidarFusionGraph();
+                else if (id === 'handbrakeOverlay' && el.style.display !== 'none') updateHandbrakeButton();
+                else if (id === 'gpsGraph' && el.style.display !== 'none') drawGpsGraph();
             });
         }
 
@@ -2864,12 +3975,20 @@
         const accelGraph = document.getElementById('accelGraph');
         const packetLossGraph = document.getElementById('packetLossGraph');
         const lidarGraph = document.getElementById('lidarGraph');
+        const radarFrontGraph = document.getElementById('radarFrontGraph');
+        const lidarFusionGraph = document.getElementById('lidarFusionGraph');
         const accelCanvas = document.getElementById('accelCanvas');
         const packetLossCanvas = document.getElementById('packetLossCanvas');
         const lidarCanvas = document.getElementById('lidarCanvas');
+        const radarFrontCanvas = document.getElementById('radarFrontCanvas');
+        const lidarFusionCanvas = document.getElementById('lidarFusionCanvas');
         const accelCtx = accelCanvas?.getContext('2d');
         const packetLossCtx = packetLossCanvas?.getContext('2d');
         const lidarCtx = lidarCanvas?.getContext('2d');
+        const radarFrontCtx = radarFrontCanvas?.getContext('2d');
+        const lidarFusionCtx = lidarFusionCanvas?.getContext('2d');
+        const gpsCanvas = document.getElementById('gpsCanvas');
+        const gpsCtx = gpsCanvas?.getContext('2d');
 
         // Activar drag & resize en los gráficos
         initGraphDragResize();
@@ -2878,12 +3997,17 @@
         let accelData = [];
         let packetLossData = [];
         let lidarObstacles = [];
+        let radarFrontValues = { FI: 0, FC: 0, FD: 0 }; // distancia en cm (0-300)
         const maxDataPoints = 100;
 
         // Intervalos de simulación
         let accelInterval = null;
         let packetLossInterval = null;
         let lidarInterval = null;
+        let radarFrontInterval = null;
+        let lidarFusionInterval = null;
+        let gpsInterval = null;
+        let gpsData = [];
         let lidarSweepAngle = -Math.PI / 2; // empieza apuntando al frente (arriba)
 
         // Función para dibujar el gráfico de aceleración (velocímetro)
@@ -3008,6 +4132,72 @@
             ctx.fillStyle = 'rgba(139, 148, 158, 0.4)';
             ctx.font = '14px Segoe UI';
             ctx.fillText('km/h', centerX, centerY + 75);
+        }
+
+        // ─── GPS / Navegación ───
+        function drawGpsGraph() {
+            if (!gpsCtx || !gpsCanvas) return;
+            const ctx = gpsCtx, W = gpsCanvas.width, H = gpsCanvas.height;
+            ctx.clearRect(0, 0, W, H);
+
+            // Grid de fondo
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.25)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+            for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+            const cx = W / 2, cy = H / 2;
+
+            // Trail (últimos 80 puntos)
+            if (gpsData.length > 1) {
+                const trail = gpsData.slice(-80);
+                ctx.strokeStyle = 'rgba(88, 166, 255, 0.35)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(cx + trail[0].x, cy + trail[0].y);
+                for (let i = 1; i < trail.length; i++) ctx.lineTo(cx + trail[i].x, cy + trail[i].y);
+                ctx.stroke();
+
+                for (let i = 0; i < trail.length; i++) {
+                    const alpha = 0.12 + (i / trail.length) * 0.55;
+                    ctx.fillStyle = `rgba(88, 166, 255, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(cx + trail[i].x, cy + trail[i].y, 2.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Posición actual (triángulo con heading)
+            const last = gpsData.length > 0 ? gpsData[gpsData.length - 1] : { x: 0, y: 0, heading: -Math.PI / 2 };
+            ctx.save();
+            ctx.translate(cx + last.x, cy + last.y);
+            ctx.rotate(last.heading);
+            ctx.fillStyle = '#58a6ff';
+            ctx.shadowColor = '#58a6ff';
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.moveTo(12, 0);
+            ctx.lineTo(-8, -7);
+            ctx.lineTo(-8, 7);
+            ctx.closePath();
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.restore();
+
+            // Coordenadas
+            const xM = (last.x / 4).toFixed(1), yM = (last.y / 4).toFixed(1);
+            ctx.fillStyle = 'rgba(139, 148, 158, 0.65)';
+            ctx.font = '11px "Segoe UI", monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText(`X: ${xM}m  Y: ${yM}m`, 8, H - 8);
+            ctx.textAlign = 'right';
+            ctx.fillText(`${(last.heading * 180 / Math.PI).toFixed(0)}\u00B0`, W - 8, H - 8);
+
+            // Rosa de los vientos (N)
+            ctx.fillStyle = 'rgba(218, 54, 51, 0.55)';
+            ctx.font = 'bold 11px "Segoe UI"';
+            ctx.textAlign = 'center';
+            ctx.fillText('N', W - 16, 16);
         }
 
         // Función para dibujar el gráfico de packet loss (línea)
@@ -3139,6 +4329,21 @@
             
             accelData[0] = currentSpeed;
             drawAccelGraph();
+        }
+
+        // Simular datos de GPS (navegación)
+        function simulateGps() {
+            const last = gpsData.length > 0 ? gpsData[gpsData.length - 1] : { x: 0, y: 0, heading: -Math.PI / 2 };
+            const speed = 1 + Math.random() * 4;
+            const turn = (Math.random() - 0.5) * 0.3;
+            const heading = last.heading + turn;
+            const x = last.x + Math.cos(heading) * speed;
+            const y = last.y + Math.sin(heading) * speed;
+            const cx = Math.max(-130, Math.min(130, x));
+            const cy = Math.max(-100, Math.min(100, y));
+            gpsData.push({ x: cx, y: cy, heading: heading });
+            if (gpsData.length > 200) gpsData.shift();
+            drawGpsGraph();
         }
 
         // Simular datos de packet loss
@@ -3310,6 +4515,473 @@
             drawLidarGraph();
         }
 
+        // ============================================================
+        //  GRÁFICO RADAR FRONTAL (FI / FC / FD en cm)
+        // ============================================================
+        function getRadarColor(cm) {
+            if (cm <= 0)   return { fill: 'rgba(48, 54, 61, 0.4)',  stroke: 'rgba(139, 148, 158, 0.6)',  text: 'rgba(139, 148, 158, 0.6)' };
+            if (cm < 80)   return { fill: 'rgba(218, 54, 51, 0.55)', stroke: 'rgba(255, 80, 80, 0.9)',     text: 'rgba(255, 100, 100, 1)' };
+            if (cm < 150)  return { fill: 'rgba(210, 153, 34, 0.55)', stroke: 'rgba(240, 192, 100, 0.9)',   text: 'rgba(255, 200, 100, 1)' };
+            return            { fill: 'rgba(46, 160, 67, 0.55)',  stroke: 'rgba(80, 200, 120, 0.9)',    text: 'rgba(120, 230, 160, 1)' };
+        }
+
+        // Dibuja una silueta de objeto genérico (caja) en la posición indicada
+        function drawRadarSilhouette(ctx, x, y, size, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            // Halo / resplandor
+            const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 1.8);
+            grad.addColorStop(0, color.stroke.replace(/[\d.]+\)$/, '0.35)'));
+            grad.addColorStop(1, color.stroke.replace(/[\d.]+\)$/, '0)'));
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(0, 0, size * 1.8, 0, Math.PI * 2);
+            ctx.fill();
+            // Caja
+            ctx.fillStyle = color.fill;
+            ctx.strokeStyle = color.stroke;
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.roundRect(-size / 2, -size / 2, size, size, 2);
+            ctx.fill();
+            ctx.stroke();
+            // Sombra interior
+            ctx.fillStyle = color.stroke;
+            ctx.globalAlpha = 0.3;
+            ctx.fillRect(-size / 2, -size / 2, size, 2);
+            ctx.globalAlpha = 1;
+            ctx.restore();
+        }
+
+        function drawRadarFrontGraph() {
+            if (!radarFrontCtx) return;
+            const ctx = radarFrontCtx;
+            const w = radarFrontCanvas.width;
+            const h = radarFrontCanvas.height;
+            const cx = w / 2;
+            const cy = h * 0.62; // centro desplazado hacia abajo para dejar sitio al título
+            const s = Math.min(w, h) / 260;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // ─── Título ───
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.95)';
+            ctx.font = 'bold ' + Math.max(11, Math.round(15 * s)) + 'px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            // ─── Tres arcos FI / FC / FD ───
+            // Cada zona cubre 60° de un cono frontal de 180°
+            // FC: -30° a +30° (frente), FI: -90° a -30° (izquierda), FD: +30° a +90° (derecha)
+            // En canvas 0° apunta a la derecha, así que -90° = arriba
+            // Usamos ángulos en radianes: arriba=-PI/2, derecha=0
+            const maxCm = 300;
+            const labels = [
+                { name: 'FI', angle: -Math.PI/2 - Math.PI/3, value: radarFrontValues.FI }, // izquierda
+                { name: 'FC', angle: -Math.PI/2,            value: radarFrontValues.FC }, // centro
+                { name: 'FD', angle: -Math.PI/2 + Math.PI/3, value: radarFrontValues.FD }  // derecha
+            ];
+
+            // Radio máximo de la zona
+            const maxR = Math.min(w * 0.45, h * 0.40);
+
+            // Aros de referencia (concéntricos)
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.3)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 3; i++) {
+                ctx.beginPath();
+                ctx.arc(cx, cy, (maxR * i) / 3, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // Cruceta
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.25)';
+            ctx.beginPath();
+            ctx.moveTo(cx - maxR, cy); ctx.lineTo(cx + maxR, cy);
+            ctx.stroke();
+
+            // Etiquetas de distancia en los aros
+            ctx.fillStyle = 'rgba(139, 148, 158, 0.55)';
+            ctx.font = Math.max(8, Math.round(9 * s)) + 'px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('100cm', cx + 4, cy - (maxR / 3));
+            ctx.fillText('200cm', cx + 4, cy - (maxR * 2 / 3));
+            ctx.fillText('300cm', cx + 4, cy - maxR);
+
+            // ─── Dibujar cada sector ───
+            const sectorHalf = Math.PI / 6; // 30° de ancho por sector
+            labels.forEach(sector => {
+                const v = Math.max(0, Math.min(maxCm, sector.value));
+                const ratio = v / maxCm; // 0 = nada, 1 = máximo
+                const r = maxR * ratio;
+                const c = getRadarColor(v);
+
+                // Cono del sector (solo si hay detección)
+                if (v > 0) {
+                    const a0 = sector.angle - sectorHalf;
+                    const a1 = sector.angle + sectorHalf;
+                    ctx.fillStyle = c.fill;
+                    ctx.strokeStyle = c.stroke;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.arc(cx, cy, Math.max(8, r), a0, a1);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Línea de medición
+                    const tipX = cx + Math.cos(sector.angle) * Math.max(8, r);
+                    const tipY = cy + Math.sin(sector.angle) * Math.max(8, r);
+                    ctx.strokeStyle = c.stroke;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(tipX, tipY);
+                    ctx.stroke();
+                }
+
+                // ─── Silueta del objeto detectado ───
+                if (v > 0) {
+                    const silSize = Math.max(8, 14 * s);
+                    const silX = cx + Math.cos(sector.angle) * Math.max(8, r);
+                    const silY = cy + Math.sin(sector.angle) * Math.max(8, r);
+                    drawRadarSilhouette(ctx, silX, silY, silSize, c);
+                }
+
+                // Etiqueta del sector (FI/FC/FD) en la parte exterior
+                const labelR = maxR + 14 * s;
+                const lx = cx + Math.cos(sector.angle) * labelR;
+                const ly = cy + Math.sin(sector.angle) * labelR;
+                ctx.fillStyle = (v > 0) ? c.text : 'rgba(139, 148, 158, 0.5)';
+                ctx.font = 'bold ' + Math.max(11, Math.round(14 * s)) + 'px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(sector.name, lx, ly);
+
+                // Valor en cm en la punta del sector
+                const valText = (v <= 0) ? '0cm' : (Math.round(v) + 'cm');
+                const valX = cx + Math.cos(sector.angle) * (maxR * 0.55);
+                const valY = cy + Math.sin(sector.angle) * (maxR * 0.55);
+                const tw = ctx.measureText(valText).width + 8;
+                ctx.fillStyle = (v > 0) ? 'rgba(10, 14, 20, 0.75)' : 'rgba(48, 54, 61, 0.55)';
+                ctx.fillRect(valX - tw / 2, valY - 9 * s, tw, 18 * s);
+                ctx.fillStyle = (v > 0) ? c.text : 'rgba(139, 148, 158, 0.5)';
+                ctx.fillText(valText, valX, valY);
+            });
+
+            // ─── Coche en el centro ───
+            const carW = Math.max(14, Math.round(20 * s));
+            const carH = Math.max(22, Math.round(30 * s));
+            ctx.save();
+            ctx.translate(cx, cy);
+            // Cuerpo
+            ctx.fillStyle = 'rgba(201, 209, 217, 0.9)';
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.8)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.roundRect(-carW / 2, -carH / 2, carW, carH, 3);
+            ctx.fill();
+            ctx.stroke();
+            // Parabrisas
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.4)';
+            ctx.fillRect(-carW / 2 + 3, -carH / 2 + 4, carW - 6, carH / 3);
+            // Flecha indicando el frente (apunta hacia arriba)
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.95)';
+            ctx.beginPath();
+            ctx.moveTo(0, -carH / 2 - Math.max(4, 5 * s));
+            ctx.lineTo(-Math.max(3, 4 * s), -carH / 2);
+            ctx.lineTo(Math.max(3, 4 * s), -carH / 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function simulateRadarFront() {
+            // Simula valores aleatorios: a veces 0 (sin detección) y a veces positivos
+            function nextVal(prev) {
+                // Probabilidad de pasar a 0 si está bajo, o de subir si está alto
+                if (prev <= 0) {
+                    return Math.random() < 0.25 ? Math.max(20, 30 + Math.random() * 270) : 0;
+                }
+                // Variación suave hacia un nuevo target
+                const target = Math.random() < 0.15 ? 0 : (30 + Math.random() * 270);
+                return Math.max(0, Math.min(300, prev + (target - prev) * 0.2 + (Math.random() - 0.5) * 25));
+            }
+            radarFrontValues.FI = Math.round(nextVal(radarFrontValues.FI));
+            radarFrontValues.FC = Math.round(nextVal(radarFrontValues.FC));
+            radarFrontValues.FD = Math.round(nextVal(radarFrontValues.FD));
+            drawRadarFrontGraph();
+        }
+
+        // ============================================================
+        //  GRÁFICO FUSIÓN LIDAR + RADAR FRONTAL
+        // ============================================================
+        // maxCm en radar frontal = 300cm, mientras que el radio del LiDAR va 0..1 (2m)
+        // Mapeo: 300cm -> ~80% del radio del LiDAR (zona frontal resaltada)
+        const FUSION_MAX_CM = 300;
+        const FUSION_CM_TO_RADIUS = 0.85 / FUSION_MAX_CM; // 300cm -> 0.85 * radius
+
+        function drawLidarFusionGraph() {
+            if (!lidarFusionCtx) return;
+            const ctx = lidarFusionCtx;
+            const w = lidarFusionCanvas.width;
+            const h = lidarFusionCanvas.height;
+            const cx = w / 2;
+            const cy = h * 0.58; // centro desplazado hacia abajo para el título
+            const s = Math.min(w, h) / 320;
+            const radius = Math.min(w, h) / 2 - 16 * s;
+
+            ctx.clearRect(0, 0, w, h);
+
+            // ─── Título ───
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.95)';
+            ctx.font = 'bold ' + Math.max(11, Math.round(14 * s)) + 'px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+
+            // ─── Aros concéntricos (4 niveles: 0.5m, 1m, 1.5m, 2m) ───
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.35)';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 4; i++) {
+                ctx.beginPath();
+                ctx.arc(cx, cy, (radius * i) / 4, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            // ─── Cruceta (N/S/E/O) ───
+            ctx.strokeStyle = 'rgba(48, 54, 61, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(cx - radius, cy); ctx.lineTo(cx + radius, cy);
+            ctx.moveTo(cx, cy - radius); ctx.lineTo(cx, cy + radius);
+            ctx.stroke();
+
+            // ─── Etiquetas de distancia ───
+            ctx.fillStyle = 'rgba(139, 148, 158, 0.5)';
+            ctx.font = Math.max(7, Math.round(8 * s)) + 'px Segoe UI';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('0.5m', cx + 3, cy - radius * 0.25);
+            ctx.fillText('1m',   cx + 3, cy - radius * 0.5);
+            ctx.fillText('1.5m', cx + 3, cy - radius * 0.75);
+            ctx.fillText('2m',   cx + 3, cy - radius);
+
+            // ─── Etiquetas de ángulo ───
+            ctx.fillStyle = 'rgba(139, 148, 158, 0.6)';
+            ctx.font = 'bold ' + Math.max(7, Math.round(8 * s)) + 'px Segoe UI';
+            ctx.textAlign = 'center';
+            ctx.fillText('0° F',  cx,             cy - radius - 4 * s);
+            ctx.fillText('90°',   cx + radius + 6 * s, cy);
+            ctx.fillText('180°',  cx,             cy + radius + 8 * s);
+            ctx.fillText('270°',  cx - radius - 6 * s, cy);
+
+            // ─── Cono FOV frontal (180°) ───
+            const fovHalf = Math.PI / 2; // 90° a cada lado = 180° total
+            const fovStart = -Math.PI / 2 - fovHalf;
+            const fovEnd   = -Math.PI / 2 + fovHalf;
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.10)';
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, radius, fovStart, fovEnd);
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // ─── Tres sectores frontales (FI / FC / FD) ───
+            const sectors = [
+                { name: 'FI', angle: -Math.PI/2 - Math.PI/3, value: radarFrontValues.FI },
+                { name: 'FC', angle: -Math.PI/2,            value: radarFrontValues.FC },
+                { name: 'FD', angle: -Math.PI/2 + Math.PI/3, value: radarFrontValues.FD }
+            ];
+            const sectorHalf = Math.PI / 6; // 30° de ancho
+
+            sectors.forEach(sector => {
+                const v = Math.max(0, Math.min(FUSION_MAX_CM, sector.value));
+                if (v > 0) {
+                    const c = getRadarColor(v);
+                    const r = Math.max(6 * s, v * FUSION_CM_TO_RADIUS * radius);
+                    const a0 = sector.angle - sectorHalf;
+                    const a1 = sector.angle + sectorHalf;
+
+                    // Cono del sector
+                    ctx.fillStyle = c.fill;
+                    ctx.strokeStyle = c.stroke;
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.arc(cx, cy, r, a0, a1);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Línea de medición
+                    const tipX = cx + Math.cos(sector.angle) * r;
+                    const tipY = cy + Math.sin(sector.angle) * r;
+                    ctx.strokeStyle = c.stroke;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(cx, cy);
+                    ctx.lineTo(tipX, tipY);
+                    ctx.stroke();
+
+                    // Silueta del objeto detectado
+                    const silSize = Math.max(8, 12 * s);
+                    drawRadarSilhouette(ctx, tipX, tipY, silSize, c);
+                }
+
+                // Etiqueta del sector (FI/FC/FD)
+                const labelR = radius + 14 * s;
+                const lx = cx + Math.cos(sector.angle) * labelR;
+                const ly = cy + Math.sin(sector.angle) * labelR;
+                ctx.fillStyle = (v > 0) ? getRadarColor(v).text : 'rgba(139, 148, 158, 0.5)';
+                ctx.font = 'bold ' + Math.max(10, Math.round(12 * s)) + 'px Segoe UI';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(sector.name, lx, ly);
+
+                // Valor en cm
+                const valText = (v <= 0) ? '0cm' : (Math.round(v) + 'cm');
+                const valX = cx + Math.cos(sector.angle) * (radius * 0.55);
+                const valY = cy + Math.sin(sector.angle) * (radius * 0.55);
+                const tw = ctx.measureText(valText).width + 8;
+                ctx.fillStyle = (v > 0) ? 'rgba(10, 14, 20, 0.75)' : 'rgba(48, 54, 61, 0.55)';
+                ctx.fillRect(valX - tw / 2, valY - 8 * s, tw, 16 * s);
+                ctx.fillStyle = (v > 0) ? getRadarColor(v).text : 'rgba(139, 148, 158, 0.5)';
+                ctx.fillText(valText, valX, valY);
+            });
+
+            // ─── Barrido LiDAR (línea con estela) ───
+            const sweepEndX = cx + Math.cos(lidarSweepAngle) * radius;
+            const sweepEndY = cy + Math.sin(lidarSweepAngle) * radius;
+            for (let t = 1; t <= 12; t++) {
+                const tAngle = lidarSweepAngle - (t * 0.04);
+                const tx = cx + Math.cos(tAngle) * radius;
+                const ty = cy + Math.sin(tAngle) * radius;
+                ctx.strokeStyle = `rgba(88, 166, 255, ${0.18 - t * 0.013})`;
+                ctx.lineWidth = Math.max(1, 2 * s);
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(tx, ty);
+                ctx.stroke();
+            }
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.85)';
+            ctx.lineWidth = Math.max(1, Math.round(2 * s));
+            ctx.shadowColor = '#58a6ff';
+            ctx.shadowBlur = 6;
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(sweepEndX, sweepEndY);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // ─── Obstáculos LiDAR (triángulos rojos) ───
+            lidarObstacles.forEach(ob => {
+                const a = ob.angle;
+                const r = ob.dist * radius;
+                const ox = cx + Math.cos(a) * r;
+                const oy = cy + Math.sin(a) * r;
+                const triSize = Math.max(4, Math.round(7 * s));
+
+                ctx.save();
+                ctx.translate(ox, oy);
+                ctx.rotate(a + Math.PI / 2);
+                ctx.fillStyle = 'rgba(218, 54, 51, 0.7)';
+                ctx.strokeStyle = 'rgba(255, 80, 80, 0.9)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, -triSize);
+                ctx.lineTo(triSize * 0.85, triSize * 0.7);
+                ctx.lineTo(-triSize * 0.85, triSize * 0.7);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                ctx.restore();
+            });
+
+            // ─── Robot en el centro ───
+            const robW = Math.max(12, Math.round(18 * s));
+            const robH = Math.max(18, Math.round(26 * s));
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.fillStyle = 'rgba(201, 209, 217, 0.9)';
+            ctx.strokeStyle = 'rgba(88, 166, 255, 0.7)';
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            ctx.roundRect(-robW / 2, -robH / 2, robW, robH, 2);
+            ctx.fill();
+            ctx.stroke();
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.4)';
+            ctx.fillRect(-robW / 2 + 3, -robH / 2 + 4, robW - 6, robH / 3);
+            ctx.fillStyle = 'rgba(88, 166, 255, 0.95)';
+            ctx.beginPath();
+            ctx.moveTo(0, -robH / 2 - Math.max(3, 4 * s));
+            ctx.lineTo(-Math.max(2, 2.5 * s), -robH / 2);
+            ctx.lineTo(Math.max(2, 2.5 * s), -robH / 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function simulateLidarFusion() {
+            // Barrido LiDAR: rota continuamente 360°
+            lidarSweepAngle += (2 * Math.PI) / 200;
+            if (lidarSweepAngle > Math.PI * 1.5) lidarSweepAngle -= 2 * Math.PI;
+
+            // Obstáculos SOLO en la mitad frontal (centro → arriba, no atrás)
+            // Ángulos frontales: -π a 0 pasando por -π/2 (arriba = frente del robot)
+            // -π = extremo izquierdo, -π/2 = frente, 0 = extremo derecho
+            if (Math.random() < 0.06) {
+                const frontAngle = -Math.PI + Math.random() * Math.PI; // [-π, 0]
+                const dist = 0.15 + Math.random() * 0.8; // ratio 0.15-0.95 → ~5cm a ~285cm
+                lidarObstacles.push({ angle: frontAngle, dist: dist });
+                if (lidarObstacles.length > 8) lidarObstacles.shift();
+            }
+            // Quitar obstáculos viejos gradualmente
+            if (Math.random() < 0.04 && lidarObstacles.length > 2) {
+                lidarObstacles.shift();
+            }
+
+            // ─── Derivar FI / FC / FD a partir de los obstáculos LiDAR ───
+            // Varios obstáculos en la misma zona → se usa el MÁS CERCANO
+            // (menor distancia en cm) porque representa mayor peligro
+            let fiClosest = Infinity, fcClosest = Infinity, fdClosest = Infinity;
+            const FI_START = -Math.PI;          // -180°
+            const FI_END   = -2 * Math.PI / 3;  // -120°
+            const FC_START = -2 * Math.PI / 3;  // -120°
+            const FC_END   = -Math.PI / 3;      // -60°
+            const FD_START = -Math.PI / 3;      // -60°
+            const FD_END   = 0;                 // 0°
+
+            lidarObstacles.forEach(ob => {
+                // Solo obstáculos en el frente (seguridad extra)
+                if (ob.angle < -Math.PI || ob.angle > 0) return;
+                if (ob.angle >= FI_START && ob.angle < FI_END) {
+                    fiClosest = Math.min(fiClosest, ob.dist);
+                } else if (ob.angle >= FC_START && ob.angle < FC_END) {
+                    fcClosest = Math.min(fcClosest, ob.dist);
+                } else if (ob.angle >= FD_START && ob.angle <= FD_END) {
+                    fdClosest = Math.min(fdClosest, ob.dist);
+                }
+            });
+
+            // Convertir a cm: el más cercano = menor ratio = menor cm
+            const fiTarget = fiClosest === Infinity ? 0 : Math.round(fiClosest * 300);
+            const fcTarget = fcClosest === Infinity ? 0 : Math.round(fcClosest * 300);
+            const fdTarget = fdClosest === Infinity ? 0 : Math.round(fdClosest * 300);
+
+            // Suavizado para transiciones naturales
+            const smooth = 0.25;
+            radarFrontValues.FI = Math.round(radarFrontValues.FI + (fiTarget - radarFrontValues.FI) * smooth);
+            radarFrontValues.FC = Math.round(radarFrontValues.FC + (fcTarget - radarFrontValues.FC) * smooth);
+            radarFrontValues.FD = Math.round(radarFrontValues.FD + (fdTarget - radarFrontValues.FD) * smooth);
+
+            drawLidarFusionGraph();
+        }
+
         // Manejar checkbox de aceleración
         const settingsMenu = document.getElementById('settingsMenu');
         if (settingsMenu) {
@@ -3339,6 +5011,26 @@
                     accelData = [0];
                     accelInterval = setInterval(simulateAccel, 50);
                 }
+            }
+
+            // Manejar checkbox de GPS
+            const gpsCheckbox = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'GPS');
+            const gpsGraph = document.getElementById('gpsGraph');
+            if (gpsCheckbox) {
+                gpsCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        gpsGraph.style.display = 'block';
+                        gpsData = [{ x: 0, y: 0, heading: -Math.PI / 2 }];
+                        gpsInterval = setInterval(simulateGps, 100);
+                        drawGpsGraph();
+                        showToast('GPS activado');
+                    } else {
+                        gpsGraph.style.display = 'none';
+                        if (gpsInterval) clearInterval(gpsInterval);
+                        showToast('GPS desactivado');
+                    }
+                });
             }
 
             // Manejar checkbox de Packet loss
@@ -3392,6 +5084,77 @@
                     lidarInterval = setInterval(simulateLidar, 50);
                 }
             }
+
+            // Manejar checkbox de Radar frontal
+            const radarFrontCheckbox = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'Radar frontal');
+
+            if (radarFrontCheckbox) {
+                radarFrontCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        radarFrontGraph.style.display = 'block';
+                        radarFrontValues = { FI: 0, FC: 0, FD: 0 };
+                        radarFrontInterval = setInterval(simulateRadarFront, 100);
+                        showToast('Radar frontal activado');
+                    } else {
+                        radarFrontGraph.style.display = 'none';
+                        if (radarFrontInterval) clearInterval(radarFrontInterval);
+                        showToast('Radar frontal desactivado');
+                    }
+                });
+                if (radarFrontCheckbox.checked) {
+                    radarFrontGraph.style.display = 'block';
+                    radarFrontValues = { FI: 0, FC: 0, FD: 0 };
+                    radarFrontInterval = setInterval(simulateRadarFront, 100);
+                }
+            }
+
+            // Manejar checkbox de Fusión LIDAR + Radar frontal
+            const lidarFusionCheckbox = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'Fusión LIDAR+Radar');
+
+            if (lidarFusionCheckbox) {
+                lidarFusionCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        lidarFusionGraph.style.display = 'block';
+                        lidarSweepAngle = -Math.PI / 2;
+                        lidarObstacles = [];
+                        radarFrontValues = { FI: 0, FC: 0, FD: 0 };
+                        lidarFusionInterval = setInterval(simulateLidarFusion, 100);
+                        showToast('Fusión LIDAR+Radar activada');
+                    } else {
+                        lidarFusionGraph.style.display = 'none';
+                        if (lidarFusionInterval) clearInterval(lidarFusionInterval);
+                        showToast('Fusión LIDAR+Radar desactivada');
+                    }
+                });
+                if (lidarFusionCheckbox.checked) {
+                    lidarFusionGraph.style.display = 'block';
+                    lidarSweepAngle = -Math.PI / 2;
+                    lidarObstacles = [];
+                    radarFrontValues = { FI: 0, FC: 0, FD: 0 };
+                    lidarFusionInterval = setInterval(simulateLidarFusion, 100);
+                }
+            }
+
+            // Manejar checkbox de Freno de mano
+            const handbrakeCheckbox = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'Freno de mano');
+            if (handbrakeCheckbox) {
+                handbrakeCheckbox.addEventListener('change', function() {
+                    const overlay = document.getElementById('handbrakeOverlay');
+                    if (this.checked) {
+                        overlay.style.display = 'block';
+                        updateHandbrakeButton();
+                        initHandbrakeClick();
+                        showToast('Freno de mano visible');
+                    } else {
+                        overlay.style.display = 'none';
+                        if (handbrakeActive) toggleHandbrake();
+                        showToast('Freno de mano oculto');
+                    }
+                });
+            }
         }
 
         // ============================================================
@@ -3402,7 +5165,7 @@
         if (settingsMenu) {
             const appsCheck = Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
                 .find(cb => cb.name === 'appCheck' && cb.closest('.dropdown-item')?.textContent.includes('Mesero Robot'));
-            
+
             if (appsCheck) {
                 appsCheck.addEventListener('change', function() {
                     if (this.checked) {
@@ -3416,6 +5179,333 @@
                     setTimeout(recalcLayout, 350); // esperar la transición
                 });
             }
+        }
+
+        // ============================================================
+        //  PANEL DE CONDUCCIÓN (RD2 Teleop)
+        // ============================================================
+        const drivingPanel = document.getElementById('drivingPanel');
+        const dpAuxState = {};
+        const dpGearState = { current: 'neutral' };
+        const dpModeState = { current: 'RC' };
+
+        // Cerrar panel
+        function closeDrivingPanel() {
+            const chk = document.getElementById('chkDrivingPanel');
+            if (chk) {
+                chk.checked = false;
+                chk.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
+        // Cambiar modo RC / TELEOP
+        function setDrivingMode(mode) {
+            dpModeState.current = mode;
+            document.getElementById('dpBtnRC').classList.toggle('active', mode === 'RC');
+            document.getElementById('dpBtnTELEOP').classList.toggle('active', mode === 'TELEOP');
+            showToast(`Modo: ${mode}`);
+        }
+
+        // Actualizar sliders / valores
+        function updateDrivingValue(type, val) {
+            if (type === 'dir') {
+                document.getElementById('dpDirValue').textContent = val;
+                // Actualizar color del slider (centrado en 0)
+                const slider = document.getElementById('dpDirSlider');
+                const pct = ((parseFloat(val) + 1000) / 2000) * 100;
+                slider.style.background = `linear-gradient(to right, #30363d 0%, #30363d ${pct}%, #58a6ff ${pct}%, #58a6ff 100%)`;
+            } else if (type === 'acel') {
+                const pct = Math.max(0, Math.min(100, (val / 1000) * 100));
+                document.getElementById('dpAcelFill').style.width = pct + '%';
+                document.getElementById('dpAcelValue').textContent = Math.round(pct) + '%';
+                document.getElementById('dpAcelLabel').textContent = `${Math.round(val)} / 1000`;
+            } else if (type === 'brake') {
+                const pct = Math.max(0, Math.min(100, (val / 1000) * 100));
+                document.getElementById('dpBrakeFill').style.width = pct + '%';
+                document.getElementById('dpBrakeValue').textContent = Math.round(pct) + '%';
+                document.getElementById('dpBrakeLabel').textContent = `${Math.round(val)} / 1000`;
+            }
+        }
+
+        function updateMaxSpeed(val) {
+            document.getElementById('dpMaxPct').textContent = val + '%';
+        }
+
+        // Selector de marcha
+        function setDrivingGear(gear) {
+            dpGearState.current = gear;
+            document.getElementById('dpBtnRetro').classList.toggle('active', gear === 'retro');
+            document.getElementById('dpBtnNeutral').classList.toggle('active', gear === 'neutral');
+            document.getElementById('dpBtnAvance').classList.toggle('active', gear === 'avance');
+            const labels = { retro: 'Retro (LB)', neutral: 'Neutral', avance: 'Avance (RB)' };
+            showToast(`Marcha: ${labels[gear]}`);
+        }
+
+        // Toggle de luces / auxiliares
+        function toggleAux(btn) {
+            const aux = btn.dataset.aux;
+            if (aux === 'abrir-puerta' || aux === 'cerrar-puerta') return; // mantener presionado
+            btn.classList.toggle('active');
+            dpAuxState[aux] = btn.classList.contains('active');
+            updateAuxStateText();
+            const labels = {
+                'luz-frontal': 'Luz frontal',
+                'guinador-izq': 'Guiñador izquierdo',
+                'guinador-der': 'Guiñador derecho',
+                'balizas': 'Balizas',
+                'destellador': 'Destellador'
+            };
+            showToast(`${labels[aux] || aux}: ${dpAuxState[aux] ? 'ON' : 'OFF'}`);
+        }
+
+        function pressAux(btn) {
+            btn.classList.add('pressed');
+            const aux = btn.dataset.aux;
+            dpAuxState[aux] = true;
+            updateAuxStateText();
+        }
+
+        function releaseAux(btn) {
+            btn.classList.remove('pressed');
+            const aux = btn.dataset.aux;
+            dpAuxState[aux] = false;
+            updateAuxStateText();
+        }
+
+        function updateHornSound(val) {
+            const labels = { normal: 'Bocina normal', suave: 'Bocina suave', aguda: 'Bocina aguda' };
+            showToast(`Sonido: ${labels[val]}`);
+        }
+
+        function updateAuxStateText() {
+            const el = document.getElementById('dpAuxState');
+            if (!el) return;
+            const state = (key) => dpAuxState[key] ? 'ON' : 'OFF';
+            el.textContent = `Luz: ${state('luz-frontal')} · Destellador: ${state('destellador')} · Izq: ${state('guinador-izq')} · Der: ${state('guinador-der')} · Balizas: ${state('balizas')} · Puerta: ${state('cerrar-puerta') || state('abrir-puerta') ? 'ON' : 'OFF'}`;
+        }
+
+        // Checkbox del panel
+        if (settingsMenu) {
+            const drivingCheck = document.getElementById('chkDrivingPanel')
+                || Array.from(settingsMenu.querySelectorAll('input[type="checkbox"]'))
+                    .find(cb => cb.closest('.dropdown-item')?.querySelector('.label-text')?.textContent === 'Panel de conducción');
+
+            if (drivingCheck) {
+                drivingCheck.addEventListener('change', function() {
+                    if (this.checked) {
+                        drivingPanel.classList.add('open');
+                        showToast('Panel de conducción abierto');
+                        document.getElementById('settingsMenu')?.classList.remove('open');
+                    } else {
+                        drivingPanel.classList.remove('open');
+                        showToast('Panel de conducción cerrado');
+                    }
+                    setTimeout(recalcLayout, 350);
+                });
+                if (drivingCheck.checked) {
+                    drivingPanel.classList.add('open');
+                }
+            }
+        }
+
+        // Simulación periódica para que el panel se vea "vivo"
+        let dpSimInterval = null;
+        function dpSimulate() {
+            // Dirección: variación suave alrededor de 0
+            const dirSlider = document.getElementById('dpDirSlider');
+            if (dirSlider) {
+                const cur = parseInt(dirSlider.value) || 0;
+                const target = Math.round((Math.random() - 0.5) * 1600);
+                const next = Math.max(-1000, Math.min(1000, cur + (target - cur) * 0.1));
+                dirSlider.value = next;
+                updateDrivingValue('dir', next);
+            }
+            // Acelerador: variación aleatoria
+            const acelVal = Math.round(Math.random() * 1000);
+            const brakeVal = Math.round(700 + Math.random() * 300);
+            updateDrivingValue('acel', acelVal);
+            updateDrivingValue('brake', brakeVal);
+            // Ejes del mando (8 valores)
+            const axes = [];
+            for (let i = 0; i < 8; i++) {
+                const v = (Math.random() - 0.5) * 0.04;
+                axes.push(`${i}:${v >= 0 ? '+' : ''}${v.toFixed(2)}`);
+            }
+            const axesEl = document.getElementById('dpAxes');
+            if (axesEl) axesEl.textContent = axes.join(' · ') + ' · …';
+            // Botones (4 valores, 0 o 1)
+            const btns = [];
+            for (let i = 0; i < 4; i++) {
+                btns.push(`${i}:${Math.random() < 0.05 ? '1.00' : '0.00'}`);
+            }
+            const btnsEl = document.getElementById('dpButtons');
+            if (btnsEl) btnsEl.textContent = btns.join(' · ');
+            // TX/RX
+            const txEl = document.getElementById('dpUltimoTx');
+            if (txEl) {
+                const dirVal = dirSlider ? parseInt(dirSlider.value) : 0;
+                txEl.textContent = `TELEOP ${dirVal} 0 ${Math.round(Math.random() * 1000)} 0 0`;
+            }
+            // Marcha real
+            const marchaEl = document.getElementById('dpMarchaReal');
+            if (marchaEl && !dpAuxState['_emergency']) {
+                const m = Math.random();
+                marchaEl.textContent = m < 0.6 ? 'SAFE' : (m < 0.9 ? 'RC' : 'TELEOP');
+            }
+            // Timestamp
+            const tsEl = document.getElementById('dpTimestamp');
+            if (tsEl) {
+                const now = new Date();
+                tsEl.textContent = now.toLocaleString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+        }
+        function startDpSim() {
+            if (dpSimInterval) return;
+            dpSimInterval = setInterval(dpSimulate, 600);
+        }
+        function stopDpSim() {
+            if (dpSimInterval) { clearInterval(dpSimInterval); dpSimInterval = null; }
+        }
+
+        // ============================================================
+        //  FUNCIONES MANDO USB / STM32 ESTADO
+        // ============================================================
+        let dpMandoActivo = true;
+        let dpStmPowerOn = true;
+        let dpEmergencyActive = false;
+        let handbrakeActive = false;
+
+        function toggleMandoActivo() {
+            dpMandoActivo = !dpMandoActivo;
+            const btn = document.getElementById('dpBtnDesactivarMando');
+            const stateEl = document.getElementById('dpMandoState');
+            const warnEl = document.getElementById('dpWarningBlock');
+            if (dpMandoActivo) {
+                btn.textContent = 'Desactivar';
+                btn.classList.remove('off');
+                stateEl.textContent = 'Mando activo. Mantén esta pestaña abierta y visible.';
+                stateEl.style.color = '';
+                warnEl.style.display = 'none';
+                showToast('Mando USB activado');
+            } else {
+                btn.textContent = 'Activar';
+                btn.classList.add('off');
+                stateEl.textContent = 'Mando desactivado. La conducción está bloqueada.';
+                stateEl.style.color = 'rgba(210, 153, 34, 0.9)';
+                warnEl.style.display = 'flex';
+                showToast('Mando USB desactivado');
+            }
+        }
+
+        function togglePowerSTM() {
+            dpStmPowerOn = !dpStmPowerOn;
+            const btn = document.getElementById('dpBtnPowerSTM');
+            const modoEl = document.getElementById('dpModo');
+            if (dpStmPowerOn) {
+                btn.classList.remove('off');
+                if (modoEl) modoEl.textContent = 'OFF';
+                showToast('STM32 encendido');
+            } else {
+                btn.classList.add('off');
+                if (modoEl) modoEl.textContent = 'OFFLINE';
+                showToast('STM32 apagado');
+            }
+        }
+
+        function triggerEmergencyStop() {
+            const btn = document.getElementById('dpBtnEmergency');
+            if (dpEmergencyActive) {
+                // Reactivar
+                dpEmergencyActive = false;
+                btn.classList.remove('triggered');
+                delete dpAuxState['_emergency'];
+                showToast('Parada de emergencia liberada');
+            } else {
+                // if (!confirm('¿Activar PARADA DE EMERGENCIA?\n(Neutral + Freno máximo)')) return;
+                dpEmergencyActive = true;
+                btn.classList.add('triggered');
+                dpAuxState['_emergency'] = true;
+                const dirSlider = document.getElementById('dpDirSlider');
+                if (dirSlider) { dirSlider.value = 0; updateDrivingValue('dir', 0); }
+                updateDrivingValue('acel', 0);
+                updateDrivingValue('brake', 1000);
+                const marchaEl = document.getElementById('dpMarchaReal');
+                if (marchaEl) marchaEl.textContent = 'SAFE';
+                showToast('PARADA DE EMERGENCIA ACTIVADA');
+            }
+        }
+
+        // ─── Freno de mano (Handbrake overlay) ───
+        function updateHandbrakeButton() {
+            const btn = document.getElementById('handbrakeBtn');
+            if (!btn) return;
+            if (handbrakeActive) {
+                btn.innerHTML = '\u26A0<br>FRENO<br>ACTIVO';
+            } else {
+                btn.innerHTML = 'FRENO<br>DE MANO';
+            }
+        }
+
+        function toggleHandbrake() {
+            const overlay = document.getElementById('handbrakeOverlay');
+            handbrakeActive = !handbrakeActive;
+
+            if (handbrakeActive) {
+                overlay.classList.add('active-overlay');
+                const dirSlider = document.getElementById('dpDirSlider');
+                if (dirSlider) { dirSlider.value = 0; updateDrivingValue('dir', 0); }
+                updateDrivingValue('acel', 0);
+                updateDrivingValue('brake', 1000);
+                const marchaEl = document.getElementById('dpMarchaReal');
+                if (marchaEl) marchaEl.textContent = 'SAFE';
+                showToast('FRENO DE MANO ACTIVADO');
+            } else {
+                overlay.classList.remove('active-overlay');
+                updateDrivingValue('brake', 0);
+                showToast('Freno de mano liberado');
+            }
+            updateHandbrakeButton();
+        }
+
+        function initHandbrakeClick() {
+            const hb = document.getElementById('handbrakeOverlay');
+            if (!hb || hb._hbInit) return;
+            hb._hbInit = true;
+            let hbDown = null;
+
+            hb.addEventListener('mousedown', function(e) {
+                // No interferir con los handles de resize/drag
+                if (e.target.closest('.graph-resize') || e.target.closest('.graph-drag-handle')) return;
+                hbDown = { x: e.clientX, y: e.clientY };
+            });
+
+            hb.addEventListener('mouseup', function(e) {
+                if (!hbDown) return;
+                const dx = e.clientX - hbDown.x;
+                const dy = e.clientY - hbDown.y;
+                hbDown = null;
+                // Solo toggle si NO hubo arrastre (umbral 5px)
+                if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+                    toggleHandbrake();
+                }
+            });
+        }
+
+        function toggleDpCollapse(id, btn) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const isOpen = el.classList.toggle('open');
+            if (btn) btn.classList.toggle('open', isOpen);
+        }
+
+        // Observar visibilidad del panel para iniciar/detener simulación
+        if (drivingPanel) {
+            const observer = new MutationObserver(() => {
+                if (drivingPanel.classList.contains('open')) startDpSim();
+                else stopDpSim();
+            });
+            observer.observe(drivingPanel, { attributes: true, attributeFilter: ['class'] });
+            if (drivingPanel.classList.contains('open')) startDpSim();
         }
 
         // ============================================================
@@ -3644,6 +5734,21 @@
         window.resetBindings = function(ctrlType) {
             saveBindings(ctrlType,{...defaultBindings[ctrlType]}); openCtrlModal(ctrlType);
         };
+
+        // Exponer funciones del panel de conducción al scope global (para inline handlers)
+        window.closeDrivingPanel = closeDrivingPanel;
+        window.setDrivingMode = setDrivingMode;
+        window.updateDrivingValue = updateDrivingValue;
+        window.setDrivingGear = setDrivingGear;
+        window.toggleAux = toggleAux;
+        window.pressAux = pressAux;
+        window.releaseAux = releaseAux;
+        window.togglePowerSTM = togglePowerSTM;
+        window.triggerEmergencyStop = triggerEmergencyStop;
+        window.toggleDpCollapse = toggleDpCollapse;
+        window.updateMaxSpeed = updateMaxSpeed;
+        window.updateHornSound = updateHornSound;
+        window.toggleMandoActivo = toggleMandoActivo;
 
         ctrlModal?.addEventListener('click', function(e) { if(e.target===ctrlModal) closeCtrlModal(); });
 
@@ -3904,8 +6009,118 @@ function updatePopoutBtn() {
     if (!btn) return;
     const isPopped = sidebarPopout && !sidebarPopout.closed;
     btn.title = isPopped ? 'Regresar a la ventana' : 'Abrir en ventana independiente';
-    btn.innerHTML = isPopped 
-        ? '<i class="fas fa-compress-arrows-alt"></i>' 
+    btn.innerHTML = isPopped
+        ? '<i class="fas fa-compress-arrows-alt"></i>'
+        : '<i class="fas fa-external-link-alt"></i>';
+}
+
+// ============================================================
+//  POP-OUT PANEL DE CONDUCCIÓN (RD2 Teleop)
+// ============================================================
+let drivingPopout = null;
+let drivingPopoutPollInterval = null;
+
+function popoutDrivingPanel() {
+    const panel = document.getElementById('drivingPanel');
+    if (!panel) return;
+
+    // Si ya hay un pop-out abierto → cerrarlo y restaurar
+    if (drivingPopout && !drivingPopout.closed) {
+        drivingPopout.close();
+        return;
+    }
+
+    // Obtener el contenido del panel
+    const inner = panel.querySelector('.dp-inner');
+    if (!inner) return;
+
+    // Clonar el innerHTML y reemplazar el botón popout por uno de cerrar
+    const html = inner.innerHTML.replace(
+        'id="dpPopoutBtn" onclick="popoutDrivingPanel()"',
+        'onclick="window.close()"'
+    ).replace(
+        'Abrir en ventana independiente',
+        'Cerrar y regresar'
+    );
+
+    // Reemplazar el botón de cerrar panel (closeDrivingPanel) por window.close en la ventana pop-out
+    const finalHtml = html.replace(
+        'onclick="closeDrivingPanel()"',
+        'onclick="window.close()"'
+    );
+
+    // Obtener estilos y scripts
+    const styleEl = document.querySelector('style');
+    const styles = styleEl ? styleEl.innerHTML : '';
+    // Buscar el script que contiene las funciones del driving panel
+    const scripts = document.querySelectorAll('script');
+    let dpScript = '';
+    for (let i = scripts.length - 1; i >= 0; i--) {
+        const sc = scripts[i].innerHTML;
+        if (sc.includes('setDrivingMode') || sc.includes('updateDrivingValue')) {
+            dpScript = sc;
+            break;
+        }
+    }
+
+    // Abrir nueva ventana
+    drivingPopout = window.open('', 'RD2Teleop', 'width=520,height=820');
+
+    drivingPopout.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+        '<title>RD2 Teleop - Panel de Conducción</title>' +
+        '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">' +
+        '<style>');
+    drivingPopout.document.write(styles);
+    drivingPopout.document.write('body{margin:0;overflow:hidden;height:100vh;background:#0a0e14;}' +
+        // Forzar que el panel ocupe toda la ventana
+        '.driving-panel{position:fixed!important;top:0!important;right:0!important;left:0!important;' +
+        'width:100%!important;height:100vh!important;transform:translateX(0)!important;' +
+        'border-left:none!important;border-radius:0!important;}' +
+        '.dp-inner{padding:18px 18px 24px;height:calc(100vh - 0px);overflow-y:auto;}' +
+        '</style></head><body>' +
+        '<div class="driving-panel open"><div class="dp-inner">' + finalHtml + '</div></div>' +
+        '<script>' + dpScript + '</' + 'script>' +
+        '</body></html>');
+    drivingPopout.document.close();
+
+    // Ocultar panel en ventana principal
+    panel.classList.remove('open');
+
+    // Marcar el checkbox como no marcado (porque ya no está visible)
+    const chk = document.getElementById('chkDrivingPanel');
+    if (chk) chk.checked = false;
+
+    // Actualizar el botón a "regresar"
+    updateDrivingPopoutBtn();
+
+    // Polling: detectar cuando se cierra la ventana pop-out
+    if (drivingPopoutPollInterval) clearInterval(drivingPopoutPollInterval);
+    drivingPopoutPollInterval = setInterval(function() {
+        if (!drivingPopout || drivingPopout.closed) {
+            clearInterval(drivingPopoutPollInterval);
+            drivingPopoutPollInterval = null;
+            drivingPopout = null;
+            restoreDrivingPanel();
+        }
+    }, 500);
+}
+
+function restoreDrivingPanel() {
+    const panel = document.getElementById('drivingPanel');
+    if (panel) panel.classList.add('open');
+    // Marcar el checkbox
+    const chk = document.getElementById('chkDrivingPanel');
+    if (chk) chk.checked = true;
+    updateDrivingPopoutBtn();
+}
+
+function updateDrivingPopoutBtn() {
+    const btn = document.getElementById('dpPopoutBtn');
+    if (!btn) return;
+    const isPopped = drivingPopout && !drivingPopout.closed;
+    btn.title = isPopped ? 'Regresar a la ventana' : 'Abrir en ventana independiente';
+    btn.innerHTML = isPopped
+        ? '<i class="fas fa-compress-arrows-alt"></i>'
         : '<i class="fas fa-external-link-alt"></i>';
 }
 </script>
