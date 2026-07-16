@@ -1685,7 +1685,7 @@
 
         /* ---- GRÁFICOS OVERLAY ---- */
         .accel-graph {
-            position: fixed;
+            position: absolute;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
@@ -1699,7 +1699,7 @@
         }
 
         .packet-loss-graph {
-            position: fixed;
+            position: absolute;
             top: 80px;
             left: 20px;
             background: rgba(10, 14, 20, 0.35);
@@ -1712,7 +1712,7 @@
         }
 
         .lidar-graph {
-            position: fixed;
+            position: absolute;
             top: 280px;
             left: 20px;
             background: rgba(10, 14, 20, 0.35);
@@ -1725,7 +1725,7 @@
         }
 
         .radar-front-graph {
-            position: fixed;
+            position: absolute;
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
@@ -1739,7 +1739,7 @@
         }
 
         .lidar-fusion-graph {
-            position: fixed;
+            position: absolute;
             top: 540px;
             left: 20px;
             background: rgba(10, 14, 20, 0.35);
@@ -1879,7 +1879,7 @@
         /* ---- TECLAS WASD ---- */
         .wasd-keys {
             --scale: 1;
-            position: fixed;
+            position: absolute;
             top: 200px;
             left: 20px;
             background: transparent;
@@ -1924,7 +1924,7 @@
 
         /* ---- CONTROL DE VOLANTE ---- */
         .steering-wheel {
-            position: fixed;
+            position: absolute;
             top: 200px;
             left: 20px;
             /* background: rgba(10, 14, 20, 0.35); */
@@ -1943,7 +1943,7 @@
 
         /* ---- CONTROL DE MANDO ---- */
         .gamepad-control {
-            position: fixed;
+            position: absolute;
             top: 200px;
             left: 20px;
             /* background: rgba(10, 14, 20, 0.35); */
@@ -1972,7 +1972,7 @@
 
         /* ── handbrakeOverlay (Freno de mano) ── */
         .handbrake-overlay {
-            position: fixed;
+            position: absolute;
             top: 80px;
             left: 20px;
             background: transparent;
@@ -2025,7 +2025,7 @@
 
         /* ── gpsGraph (GPS / Navegación) ── */
         .gps-graph {
-            position: fixed;
+            position: absolute;
             top: 250px;
             left: 50%;
             transform: translateX(-50%);
@@ -2641,6 +2641,11 @@
                 <span class="dp-status-label">Canal</span>
                 <span class="dp-status-value">Active</span>
             </div>
+            <div class="dp-status-item" id="dpStatusMic">
+                <span class="dp-status-dot dot-off"></span>
+                <span class="dp-status-label">Micrófono</span>
+                <span class="dp-status-value">Inactivo</span>
+            </div>
         </div>
 
         <!-- CONTROL EN VIVO -->
@@ -2739,6 +2744,9 @@
                 <button class="dp-aux-btn" data-aux="destellador" onclick="toggleAux(this)">
                     <span class="dp-key">R3</span> Destellador
                 </button>
+                <button class="dp-aux-btn" data-aux="microfono" onclick="toggleMic(this)">
+                    <i class="fas fa-microphone"></i> Micrófono
+                </button>
                 <button class="dp-aux-btn" data-aux="abrir-puerta" onmousedown="pressAux(this)" onmouseup="releaseAux(this)" onmouseleave="releaseAux(this)">
                     <span class="dp-key">A</span> Abrir puerta
                     <!-- <small>Mantener presionado</small> -->
@@ -2749,7 +2757,7 @@
                 </button>
             </div>
             <p class="dp-note dp-note-warn">Pruebas físicas restantes</p>
-            <p class="dp-note dp-note-state" id="dpAuxState">Luz: OFF · Destellador: OFF · Izq: OFF · Der: OFF · Balizas: OFF · Puerta: OFF</p>
+            <p class="dp-note dp-note-state" id="dpAuxState">Luz: OFF · Destellador: OFF · Izq: OFF · Der: OFF · Balizas: OFF · Mic: OFF · Puerta: OFF</p>
         </div>
 
         <!-- AUDIO JETSON -->
@@ -2876,7 +2884,7 @@
     <div class="modal-box" id="ctrlModalBox"></div>
 </div>
 
-<script>
+<!-- <script>
     (function() {
         const grid = document.getElementById('cameraGrid');
 
@@ -5274,6 +5282,31 @@
             showToast(`${labels[aux] || aux}: ${dpAuxState[aux] ? 'ON' : 'OFF'}`);
         }
 
+        // Toggle de micrófono (con actualización del indicador de estado)
+        let micActive = false;
+
+        function toggleMic(btn) {
+            btn.classList.toggle('active');
+            micActive = btn.classList.contains('active');
+
+            // Actualizar dot en la fila de estado
+            const dot = document.querySelector('#dpStatusMic .dp-status-dot');
+            if (dot) {
+                dot.classList.toggle('dot-on', micActive);
+                dot.classList.toggle('dot-off', !micActive);
+            }
+
+            // Actualizar texto de estado
+            const val = document.querySelector('#dpStatusMic .dp-status-value');
+            if (val) val.textContent = micActive ? 'Escuchando…' : 'Inactivo';
+
+            // Sincronizar con dpAuxState
+            dpAuxState['microfono'] = micActive;
+            updateAuxStateText();
+
+            showToast(`Micrófono: ${micActive ? 'ON' : 'OFF'}`);
+        }
+
         function pressAux(btn) {
             btn.classList.add('pressed');
             const aux = btn.dataset.aux;
@@ -5297,7 +5330,7 @@
             const el = document.getElementById('dpAuxState');
             if (!el) return;
             const state = (key) => dpAuxState[key] ? 'ON' : 'OFF';
-            el.textContent = `Luz: ${state('luz-frontal')} · Destellador: ${state('destellador')} · Izq: ${state('guinador-izq')} · Der: ${state('guinador-der')} · Balizas: ${state('balizas')} · Puerta: ${state('cerrar-puerta') || state('abrir-puerta') ? 'ON' : 'OFF'}`;
+            el.textContent = `Luz: ${state('luz-frontal')} · Destellador: ${state('destellador')} · Izq: ${state('guinador-izq')} · Der: ${state('guinador-der')} · Balizas: ${state('balizas')} · Mic: ${state('microfono')} · Puerta: ${state('cerrar-puerta') || state('abrir-puerta') ? 'ON' : 'OFF'}`;
         }
 
         // Checkbox del panel
@@ -5797,10 +5830,10 @@
         
         setTimeout(() => showToast('Arrastra cámaras · bordes para redimensionar'), 500);
     })();
-</script>
+</script> -->
 
 <!-- ═══ SCRIPT DEL SIDEBAR MESERO ═══ -->
-<script>
+<!-- <script>
 // ─── Conexión ───
 function testConnectionSB() {
     const url = document.getElementById('sbBaseUrl').value.trim();
@@ -5978,7 +6011,8 @@ function popoutSidebar() {
     const sbScript = scripts.length >= 3 ? scripts[scripts.length - 1].innerHTML : '';
 
     sidebarPopout = window.open('', 'MeseroRobot', 'width=380,height=750');
-    sidebarPopout.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    sidebarPopout.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
         '<title>Mesero Robot</title>' +
         '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">' +
         '<style>');
@@ -6080,19 +6114,71 @@ function popoutDrivingPanel() {
     }
 
     // Abrir nueva ventana
-    drivingPopout = window.open('', 'RD2Teleop', 'width=520,height=820');
+    drivingPopout = window.open('', 'RD2Teleop', 'width=760,height=920');
 
-    drivingPopout.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8">' +
+    drivingPopout.document.write('<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
         '<title>RD2 Teleop - Panel de Conducción</title>' +
         '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">' +
         '<style>');
     drivingPopout.document.write(styles);
-    drivingPopout.document.write('body{margin:0;overflow:hidden;height:100vh;background:#0a0e14;}' +
-        // Forzar que el panel ocupe toda la ventana
+    // ─── SEGUNDO BLOQUE <style>: overrides responsive (mayor especificidad, vienen después) ───
+    drivingPopout.document.write('</style><style>' +
+        'html,body{margin:0;padding:0;overflow-x:hidden;height:100vh;background:#0a0e14;' +
+        'font-family:"Segoe UI",system-ui,sans-serif;color:#c9d1d9;}' +
+        // Forzar panel a ocupar toda la ventana (sobrescribe .open también)
         '.driving-panel{position:fixed!important;top:0!important;right:0!important;left:0!important;' +
-        'width:100%!important;height:100vh!important;transform:translateX(0)!important;' +
-        'border-left:none!important;border-radius:0!important;}' +
-        '.dp-inner{padding:18px 18px 24px;height:calc(100vh - 0px);overflow-y:auto;}' +
+        'width:100%!important;height:100vh!important;max-width:none!important;' +
+        'transform:translateX(0)!important;border-left:none!important;border-radius:0!important;' +
+        'overflow-y:auto!important;overflow-x:hidden!important;flex-shrink:unset!important;}' +
+        '.driving-panel.open{width:100%!important;max-width:none!important;}' +
+        // Inner: ancho completo verdadero, sin límite, padding adaptable
+        '.dp-inner{width:100%!important;max-width:none!important;margin:0!important;' +
+        'padding:16px 16px 24px!important;height:auto!important;min-height:100vh;' +
+        'overflow-y:visible!important;box-sizing:border-box!important;display:flex!important;' +
+        'flex-direction:column!important;gap:14px!important;}' +
+        // ─── BREAKPOINT: tablet / ventana mediana (≥600px) ───
+        '@media(min-width:600px){' +
+        '.dp-inner{padding:22px 28px 30px!important;gap:18px!important;}' +
+        '.dp-status-item{min-width:150px;font-size:13px;padding:10px 14px;}' +
+        '.dp-throttle-row{gap:16px;}' +
+        '.dp-section{padding:16px 20px;}' +
+        '.dp-aux-grid{grid-template-columns:1fr 1fr 1fr!important;gap:8px;}' +
+        '.dp-gear-buttons{gap:8px;}' +
+        '}' +
+        // ─── BREAKPOINT: escritorio / pantalla grande (≥900px) ───
+        '@media(min-width:900px){' +
+        '.dp-inner{padding:28px 44px 36px!important;gap:20px!important;}' +
+        '.dp-status{gap:12px;}' +
+        '.dp-status-item{min-width:170px;font-size:14px;padding:12px 18px;}' +
+        '.dp-section{padding:20px 24px;border-radius:14px;}' +
+        '.dp-section h2{font-size:18px;}' +
+        '.dp-aux-grid{grid-template-columns:1fr 1fr 1fr!important;gap:10px;}' +
+        '.dp-aux-btn{padding:12px 16px;font-size:14px;}' +
+        '.dp-gear-btn{padding:12px 16px;font-size:14px;}' +
+        '.dp-throttle-row{gap:20px;}' +
+        '.dp-value{font-size:16px;}' +
+        '.dp-slider{height:8px;}' +
+        '.dp-slider::-webkit-slider-thumb{width:22px;height:22px;}' +
+        '}' +
+        // ─── BREAKPOINT: pantalla extra grande (≥1300px) ───
+        '@media(min-width:1300px){' +
+        '.dp-inner{padding:32px 64px 42px!important;gap:24px!important;' +
+        'display:grid!important;grid-template-columns:1fr 1fr;align-items:start;}' +
+        '.dp-header{grid-column:1/-1;}' +
+        '.dp-status{grid-column:1/-1;}' +
+        '.dp-footer{grid-column:1/-1;}' +
+        '.dp-aux-grid{grid-template-columns:1fr 1fr 1fr!important;}' +
+        '}' +
+        // ─── BREAKPOINT: móvil muy estrecho (<400px) ───
+        '@media(max-width:400px){' +
+        '.dp-inner{padding:10px 10px 18px!important;gap:10px!important;}' +
+        '.dp-aux-grid{grid-template-columns:1fr!important;}' +
+        '.dp-gear-buttons{grid-template-columns:1fr 1fr!important;}' +
+        '.dp-throttle-row{grid-template-columns:1fr!important;}' +
+        '.dp-status{flex-direction:column!important;gap:6px;}' +
+        '.dp-status-item{min-width:0!important;}' +
+        '}' +
         '</style></head><body>' +
         '<div class="driving-panel open"><div class="dp-inner">' + finalHtml + '</div></div>' +
         '<script>' + dpScript + '</' + 'script>' +
@@ -6139,7 +6225,50 @@ function updateDrivingPopoutBtn() {
         ? '<i class="fas fa-compress-arrows-alt"></i>'
         : '<i class="fas fa-external-link-alt"></i>';
 }
-</script>
+</script> -->
 
+
+<!-- Estado global (DEBE IR PRIMERO) -->
+<script src="js/state.js"></script>
+
+<!-- Utilidades -->
+<script src="js/utils.js"></script>
+
+<!-- Overlays / Gráficos -->
+<script src="js/overlays/accel-graph.js"></script>
+<script src="js/overlays/packet-loss-graph.js"></script>
+<script src="js/overlays/lidar-graph.js"></script>
+<script src="js/overlays/radar-front-graph.js"></script>
+<script src="js/overlays/lidar-fusion-graph.js"></script>
+<script src="js/overlays/gps-graph.js"></script>
+<script src="js/overlays/steering-wheel.js"></script>
+<script src="js/overlays/gamepad-control.js"></script>
+<script src="js/overlays/handbrake.js"></script>
+<script src="js/overlays/wasd-keys.js"></script>
+<script src="js/overlays/graph-drag-resize.js"></script>
+
+<!-- Cámaras -->
+<script src="js/cameras.js"></script>
+
+<!-- Controles -->
+<script src="js/controls.js"></script>
+
+<!-- Layouts -->
+<script src="js/layouts.js"></script>
+
+<!-- Panel de Conducción -->
+<script src="js/driving/aux-controls.js"></script>
+<script src="js/driving/driving-panel.js"></script>
+<script src="js/driving/driving-popout.js"></script>
+
+<!-- Sidebar -->
+<script src="js/sidebar/sidebar-api.js"></script>
+<script src="js/sidebar/sidebar-popout.js"></script>
+
+<!-- UI General -->
+<script src="js/ui.js"></script>
+
+<!-- Inicialización (DEBE IR AL FINAL) -->
+<script src="js/init.js"></script>
 </body>
 </html>
