@@ -4140,37 +4140,52 @@
             const ctx = gpsCtx, W = gpsCanvas.width, H = gpsCanvas.height;
             ctx.clearRect(0, 0, W, H);
 
-            // Grid de fondo
+            // La vista siempre se centra en el robot (último punto)
+            const last = gpsData.length > 0 ? gpsData[gpsData.length - 1] : { x: 0, y: 0, heading: -Math.PI / 2 };
+            const originX = last.x;
+            const originY = last.y;
+
+            // Grid de fondo (se desplaza con el robot)
             ctx.strokeStyle = 'rgba(48, 54, 61, 0.25)';
             ctx.lineWidth = 1;
-            for (let x = 0; x <= W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
-            for (let y = 0; y <= H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+            const gridSize = 40;
+            // Calcular el offset del grid para que se desplace suavemente
+            const offsetX = ((originX % gridSize) + gridSize) % gridSize;
+            const offsetY = ((originY % gridSize) + gridSize) % gridSize;
+            for (let x = -offsetX; x <= W; x += gridSize) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+            }
+            for (let y = -offsetY; y <= H; y += gridSize) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+            }
 
+            // Centro de la vista (donde aparece el robot)
             const cx = W / 2, cy = H / 2;
 
-            // Trail (últimos 80 puntos)
+            // Trail (todos los puntos, dibujados relativos al robot)
             if (gpsData.length > 1) {
-                const trail = gpsData.slice(-80);
+                const trail = gpsData.slice(-150);
                 ctx.strokeStyle = 'rgba(88, 166, 255, 0.35)';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(cx + trail[0].x, cy + trail[0].y);
-                for (let i = 1; i < trail.length; i++) ctx.lineTo(cx + trail[i].x, cy + trail[i].y);
+                ctx.moveTo(cx + (trail[0].x - originX), cy + (trail[0].y - originY));
+                for (let i = 1; i < trail.length; i++) {
+                    ctx.lineTo(cx + (trail[i].x - originX), cy + (trail[i].y - originY));
+                }
                 ctx.stroke();
 
                 for (let i = 0; i < trail.length; i++) {
                     const alpha = 0.12 + (i / trail.length) * 0.55;
                     ctx.fillStyle = `rgba(88, 166, 255, ${alpha})`;
                     ctx.beginPath();
-                    ctx.arc(cx + trail[i].x, cy + trail[i].y, 2.2, 0, Math.PI * 2);
+                    ctx.arc(cx + (trail[i].x - originX), cy + (trail[i].y - originY), 2.2, 0, Math.PI * 2);
                     ctx.fill();
                 }
             }
 
-            // Posición actual (triángulo con heading)
-            const last = gpsData.length > 0 ? gpsData[gpsData.length - 1] : { x: 0, y: 0, heading: -Math.PI / 2 };
+            // Posición actual (triángulo con heading) — siempre en el centro
             ctx.save();
-            ctx.translate(cx + last.x, cy + last.y);
+            ctx.translate(cx, cy);
             ctx.rotate(last.heading);
             ctx.fillStyle = '#58a6ff';
             ctx.shadowColor = '#58a6ff';
@@ -4184,7 +4199,7 @@
             ctx.shadowBlur = 0;
             ctx.restore();
 
-            // Coordenadas
+            // Coordenadas (mundo absoluto)
             const xM = (last.x / 4).toFixed(1), yM = (last.y / 4).toFixed(1);
             ctx.fillStyle = 'rgba(139, 148, 158, 0.65)';
             ctx.font = '11px "Segoe UI", monospace';
@@ -4339,9 +4354,9 @@
             const heading = last.heading + turn;
             const x = last.x + Math.cos(heading) * speed;
             const y = last.y + Math.sin(heading) * speed;
-            const cx = Math.max(-130, Math.min(130, x));
-            const cy = Math.max(-100, Math.min(100, y));
-            gpsData.push({ x: cx, y: cy, heading: heading });
+            // Sin límites: la vista se centra en el robot, por lo que las posiciones
+            // pueden crecer infinitamente y el trail siempre se ve correctamente
+            gpsData.push({ x: x, y: y, heading: heading });
             if (gpsData.length > 200) gpsData.shift();
             drawGpsGraph();
         }
