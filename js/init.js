@@ -68,21 +68,6 @@
         initUI();
         initSettingsCheckboxes();
 
-        // ─── Control por defecto ───
-        const selectedControl = document.querySelector('input[name="controlType"]:checked');
-        if (selectedControl) {
-            if (selectedControl.value === 'teclado') {
-                wasdKeys.style.display = 'block';
-            } else if (selectedControl.value === 'volante') {
-                steeringWheel.style.display = 'block';
-                drawSteeringWheel(0);
-                steeringInterval = setInterval(simulateSteering, 50);
-            } else if (selectedControl.value === 'mando') {
-                gamepadControl.style.display = 'block';
-                drawGamepad();
-            }
-        }
-
         // ─── Layout inicial ───
         recalcLayout();
 

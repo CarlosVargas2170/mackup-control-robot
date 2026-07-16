@@ -2,7 +2,37 @@
 //  CONTROLES — Selección tipo, config modal, bindings
 // ═══════════════════════════════════════════════════════════
 
+// ─── Helpers de overlays de control ───
+function deactivateAllControlOverlays() {
+    wasdKeys.style.display = 'none';
+    steeringWheel.style.display = 'none';
+    gamepadControl.style.display = 'none';
+    if (steeringInterval) {
+        clearInterval(steeringInterval);
+        steeringInterval = null;
+    }
+}
+
+function activateControlOverlay(type) {
+    if (type === 'teclado') {
+        wasdKeys.style.display = 'block';
+        showToast('Control por teclado activado');
+    } else if (type === 'volante') {
+        steeringWheel.style.display = 'block';
+        steeringAngle = 0;
+        steeringTarget = 0;
+        drawSteeringWheel(0);
+        steeringInterval = setInterval(simulateSteering, 50);
+        showToast('Control por volante activado');
+    } else if (type === 'mando') {
+        gamepadControl.style.display = 'block';
+        drawGamepad();
+        showToast('Control por mando activado');
+    }
+}
+
 function initControls() {
+    // ─── Submenús desplegables ───
     document.querySelectorAll('.submenu-trigger').forEach(trigger => {
         trigger.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -11,35 +41,49 @@ function initControls() {
         });
     });
 
-    document.querySelectorAll('input[name="controlType"]').forEach(radio => {
+    // ─── Master toggle: activar/desactivar todos los controles ───
+    const masterToggle = document.getElementById('chkControlMaster');
+    const ctrlOptions = document.querySelectorAll('.ctrl-option');
+    const radios = document.querySelectorAll('input[name="controlType"]');
+
+    // Estado inicial: controles desactivados
+    ctrlOptions.forEach(opt => opt.classList.add('disabled'));
+
+    if (masterToggle) {
+        masterToggle.addEventListener('change', function() {
+            if (this.checked) {
+                // Activar: habilitar radios, seleccionar último usado (o teclado por defecto)
+                ctrlOptions.forEach(opt => opt.classList.remove('disabled'));
+                radios.forEach(r => r.disabled = false);
+                var lastUsed = localStorage.getItem('ctrl_last_selected') || 'teclado';
+                var targetRadio = document.querySelector('input[name="controlType"][value="' + lastUsed + '"]');
+                if (targetRadio) {
+                    targetRadio.checked = true;
+                    activateControlOverlay(lastUsed);
+                }
+                showToast('Control remoto activado');
+            } else {
+                // Desactivar: ocultar overlays, limpiar intervalos, deshabilitar radios
+                deactivateAllControlOverlays();
+                ctrlOptions.forEach(opt => opt.classList.add('disabled'));
+                radios.forEach(function(r) { r.disabled = true; r.checked = false; });
+                showToast('Control remoto desactivado');
+            }
+        });
+    }
+
+    // ─── Radios de tipo de control ───
+    radios.forEach(function(radio) {
         radio.addEventListener('change', function() {
-            wasdKeys.style.display = 'none';
-            steeringWheel.style.display = 'none';
-            gamepadControl.style.display = 'none';
-            
-            if (steeringInterval) {
-                clearInterval(steeringInterval);
-                steeringInterval = null;
-            }
-            
-            if (this.value === 'teclado' && this.checked) {
-                wasdKeys.style.display = 'block';
-                showToast('Control por teclado activado');
-            } else if (this.value === 'volante' && this.checked) {
-                steeringWheel.style.display = 'block';
-                steeringAngle = 0;
-                steeringTarget = 0;
-                drawSteeringWheel(0);
-                steeringInterval = setInterval(simulateSteering, 50);
-                showToast('Control por volante activado');
-            } else if (this.value === 'mando' && this.checked) {
-                gamepadControl.style.display = 'block';
-                drawGamepad();
-                showToast('Control por mando activado');
-            }
+            if (!masterToggle || !masterToggle.checked) return;
+
+            deactivateAllControlOverlays();
+            activateControlOverlay(this.value);
+            localStorage.setItem('ctrl_last_selected', this.value);
         });
     });
 
+    // ─── Iconos de configuración ⚙ ───
     document.querySelectorAll('.cfg-trigger').forEach(icon => {
         icon.addEventListener('click', function(e) {
             e.stopPropagation(); e.preventDefault();
